@@ -20,9 +20,7 @@ class dHvAFrame(wx.Frame):
         #same initialization as wx.Frame
         wx.Frame.__init__(self,*args,**kwargs)
 
-        #set up graph windows
-        #self.graphWindow = graphWindow(self)
-
+   
         #setting up the menu
         filemenu=wx.Menu()
         menuOpen = filemenu.Append(wx.ID_OPEN,"OPEN","Open a data file")
@@ -38,15 +36,27 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
         self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
 
-        #Events for combo box
-        #self.x_data_comboBox.Bind(wx.EVT_COMBOBOX,self.data_Selection) 
+        #set up toolbar
+        tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
+        tsize = (24,24)
+        open_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, tsize)
+        save_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR,tsize)
+        tb.SetToolBitmapSize(tsize)
+
+        #Events on toolbar
+        tb.AddLabelTool(10,'Open',open_bmp)
+        self.Bind(wx.EVT_TOOL,self.OnOpen,id=10)
+
+        tb.AddLabelTool(20,'Save',save_bmp)
+        self.Bind(wx.EVT_TOOL,self.OnSave,id=20)
+
+       #set up plot windows
+        self.plotWindow = plotWindow(self)
 
         #Sizers for the comboBoxes 
         self.comboBox_box = wx.StaticBox(self,-1,'Select Data Arrays')
         self.comboBox_bsizer = wx.StaticBoxSizer(self.comboBox_box, wx.VERTICAL)
 
-        #self.ComboBoxSizer = wx.BoxSizer(wx.VERTICAL)
-        
         #set up controls. Dropdown menu for selecting data
         # 0 = x data, 1 = in phase y, 2 = outphase y
         comboBox_text = ['X','in-phase Y','out-phase Y']
@@ -56,16 +66,38 @@ class dHvAFrame(wx.Frame):
             #self.ComboBoxSizer.Add(self.Data_comboBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
             self.comboBox_bsizer.Add(tmp_text,0,wx.ALIGN_LEFT)
             self.comboBox_bsizer.Add(self.Data_comboBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
-       #set up box over the combo boxes
 
-       #set up plot windows
-        self.plotWindow = plotWindow(self)
+
+        #set up controls 
+
+        #min and max plot range
+        self.rangeBox = wx.StaticBox(self,-1,'Select the Data Range of Interest')
+        self.rangeBox_sizer = wx.StaticBoxSizer(self.rangeBox,wx.HORIZONTAL)
+
+        self.minH_Ctrl = wx.SpinCtrlDouble(self,value='0.0',min=0.0,max=16.0,inc=0.5)
+        self.minH_Ctrl.SetDigits(2)
+        self.rangeBox_sizer.Add(wx.StaticText(self,-1,'min'),0,wx.ALIGN_LEFT)
+        self.rangeBox_sizer.Add(self.minH_Ctrl,1,wx.EXPAND | wx.ALIGN_CENTER)
+
+        self.maxH_Ctrl = wx.SpinCtrlDouble(self,value='16.0',min=0.0,max=16.0,inc=0.5)
+        self.maxH_Ctrl.SetDigits(2)
+        self.rangeBox_sizer.Add(wx.StaticText(self,-1,'max'),0,wx.ALIGN_LEFT)
+        self.rangeBox_sizer.Add(self.maxH_Ctrl,1,wx.EXPAND | wx.ALIGN_CENTER)
+
+        #Set up events 
+       # self.Bind(wx.EVT_SPINCTRLDOUBLE,self.minH_Change,minH_Ctrl)
+       # self.Bind(wx.EVT_SPINCTRLDOUBLE,self.maxH_Change,maxH_Ctrl)
+
+        #set up nested control sizers
+        self.ctrlSizer = wx.BoxSizer(wx.VERTICAL)
+        self.ctrlSizer.Add(self.rangeBox_sizer,0,wx.EXPAND,border=5)
+        self.ctrlSizer.Add(self.comboBox_bsizer,0,wx.EXPAND,border=5)
 
        #set up final sizers
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.sizer.Add(self.plotWindow,1,wx.EXPAND)
         #self.sizer.Add(self.ComboBoxSizer,0,wx.EXPAND,border=5)
-        self.sizer.Add(self.comboBox_bsizer,0,wx.EXPAND,border=5)
+        self.sizer.Add(self.ctrlSizer,0,wx.EXPAND,border=5)
 
         #Layout sizers
         self.SetSizer(self.sizer)     
@@ -93,6 +125,9 @@ class dHvAFrame(wx.Frame):
                 for ii in range(len(self.varnames)):
                     self.Data_comboBox[i].Append(self.varnames[ii])
         dlg.Destroy()
+
+    def OnSave(self,e):
+        pass
 
 class plotWindow(wx.Window):
     def __init__(self, *args, **kwargs):
