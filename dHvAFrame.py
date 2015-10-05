@@ -216,7 +216,9 @@ class plotWindow(wx.Window):
     def draw(self):
         #test plots
         x1 = np.linspace(self.xmin,self.xmax,100)
-        y1 = np.power(x1,2)
+        y1 = []
+        for i in range(0,len(self.polyOrder)):
+            y1=np.power(x1,self.polyOrder[i])
         x2 = x1
         y2 = np.sin(x2)
         x3 = x1
@@ -245,6 +247,7 @@ class plotWindow(wx.Window):
         self.subplot4.set_xlim([self.xmin,self.xmax])
     
     def repaint(self):
+        del self.subplot1.lines[0] #delete the previous plot in the first subplot
         self.canvas.draw()
 
 
