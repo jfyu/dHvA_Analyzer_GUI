@@ -16,7 +16,13 @@ class dHvAFrame(wx.Frame):
         self.dirname=''
         self.varnames =['SampleNumber','CurrentT','CurrentH','A1X','B1X','C1X','D1X','A1Y','B1Y','C1Y','D1Y','A1R','B1R','C1R','D1R','A2X','B2X','C2X','D2X','A2Y','B2Y','C2Y','D2Y','A2R','B2R','C2R','D2R','A3X','B3X','C3X','D3X','A3Y','B3Y','C3Y','D3Y','A3R','B3R','C3R','D3R','A4X','B4X','C4X','D4X','A4Y','B4Y','C4Y','D4Y','A4R','B4R','C4R','D4R','A5X','B5X','C5X','D5X','A5Y','B5Y','C5Y','D5Y','A5R','B5R','C5R','D5R','A6X','B6X','C6X','D6X','A6Y','B6Y','C6Y','D6Y','A6R','B6R','C6R','D6R','EVoltage','FVoltage','GVoltage','HVoltage']
         self.Data_comboBox=[]
-        
+        self.dataFile=None
+        self.xdata = None
+        self.InYdata = None
+        self.OutYdata = None
+        self.xmin = 0
+        self.xmax = 16
+
         #same initialization as wx.Frame
         wx.Frame.__init__(self,*args,**kwargs)
 
@@ -67,7 +73,11 @@ class dHvAFrame(wx.Frame):
             self.comboBox_bsizer.Add(tmp_text,0,wx.ALIGN_LEFT)
             self.comboBox_bsizer.Add(self.Data_comboBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
 
-
+        #setup events
+        self.Bind(wx.EVT_COMBOBOX, self.setXdata,self.Data_comboBox[0])
+        self.Bind(wx.EVT_COMBOBOX, self.setInYdata,self.Data_comboBox[1])
+        self.Bind(wx.EVT_COMBOBOX, self.setOutYdata,self.Data_comboBox[2])
+        
         #set up controls 
 
         #min and max plot range
@@ -88,15 +98,41 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_SPINCTRLDOUBLE,self.minH_Change,self.minH_Ctrl)
         self.Bind(wx.EVT_SPINCTRLDOUBLE,self.maxH_Change,self.maxH_Ctrl)
 
+        #Polynomial BG subtraction
+        self.polyBox = wx.StaticBox(self,-1,'Polynomial Background Subtraction (default ON)')
+        self.polyBox_sizer = wx.StaticBoxSizer(self.polyBox,wx.VERTICAL)
+
+        self.polyButton = wx.ToggleButton(self,-1,'ON')
+        self.polyButton.SetValue(True)
+
+        self.polyOrder_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.polyOrderCheckBox=[]
+        for i in range(0,6):
+            self.polyOrderCheckBox.append(wx.CheckBox(self,-1,str(i+1)))
+            self.polyOrder_sizer.Add(self.polyOrderCheckBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
+        for j in range(0,3):
+            self.polyOrderCheckBox[j].SetValue(True)
+        self.polyBox_sizer.Add(self.polyButton,0,wx.ALIGN_LEFT)
+        self.polyBox_sizer.Add(self.polyOrder_sizer,0,wx.EXPAND)
+        
+        #Apply button
+        self.applyButton = wx.Button(self,wx.ID_APPLY)
+        self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.buttonSizer.Add(self.applyButton,0,wx.ALIGN_RIGHT)
+
+        #Apply button events
+        self.Bind(wx.EVT_BUTTON,self.applyChanges,self.applyButton)
+
         #set up nested control sizers
         self.ctrlSizer = wx.BoxSizer(wx.VERTICAL)
-        self.ctrlSizer.Add(self.rangeBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.comboBox_bsizer,0,wx.EXPAND,border=5)
-
+        self.ctrlSizer.Add(self.rangeBox_sizer,0,wx.EXPAND,border=5)
+        self.ctrlSizer.Add(self.polyBox_sizer,0,wx.EXPAND,border=5)
+        self.ctrlSizer.Add(self.buttonSizer,0,wx.EXPAND,border=5)
+       
        #set up final sizers
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.sizer.Add(self.plotWindow,1,wx.EXPAND)
-        #self.sizer.Add(self.ComboBoxSizer,0,wx.EXPAND,border=5)
         self.sizer.Add(self.ctrlSizer,0,wx.EXPAND,border=5)
 
         #Layout sizers
@@ -129,13 +165,37 @@ class dHvAFrame(wx.Frame):
     def OnSave(self,e):
         pass
 
+    def setXdata(self,e):
+        self.xdata = self.Data_comboBox[0].GetValue()
+        
+    def setInYdata(self,e):
+        self.InYdata = self.Data_comboBox[1].GetValue()
+
+    def setOutYdata(self,e):
+        self.OutYdata = self.Data_comboBox[2].GetValue()
+
     def minH_Change(self,e):
-        self.plotWindow.xmin = self.minH_Ctrl.GetValue()
-        self.plotWindow.draw()
-        self.plotWindow.repaint()
+        self.xmin = self.minH_Ctrl.GetValue()
+        #self.plotWindow.draw()
+        #self.plotWindow.repaint()
 
     def maxH_Change(self,e):
-        self.plotWindow.xmax = self.maxH_Ctrl.GetValue()
+        self.xmax = self.maxH_Ctrl.GetValue()
+        #self.plotWindow.draw()
+        #self.plotWindow.repaint()
+
+    def applyChanges(self,e):
+        if self.dataFile != None:
+            self.plotWindow.x = self.xdata
+            self.plotWindow.InY = self.InYdata
+            self.plotWindow.OutY = self.OutYdata
+        if self.polyButton.GetValue() == True:
+            self.plotWindow.polyOrder=[]
+            for i in range(0,6):
+                if self.polyOrderCheckBox[i].GetValue() == True:
+                    self.plotWindow.polyOrder.append(i+1)
+        self.plotWindow.xmin=self.xmin
+        self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
 
@@ -144,6 +204,10 @@ class plotWindow(wx.Window):
     def __init__(self, *args, **kwargs):
         wx.Window.__init__(self,*args,**kwargs)
         self.figure=Figure()
+        self.x = None
+        self.InY = None
+        self.OutY = None
+        self.polyOrder = [1,2,3]
         self.xmin=-10
         self.xmax=20
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
