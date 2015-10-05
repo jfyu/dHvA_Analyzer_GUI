@@ -110,7 +110,46 @@ class dHvAFrame(wx.Frame):
             self.polyOrderCheckBox[j].SetValue(True)
         self.polyBox_sizer.Add(self.polyButton,0,wx.ALIGN_LEFT)
         self.polyBox_sizer.Add(self.polyOrder_sizer,0,wx.EXPAND)
+
+        #despike 
+        self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default ON)')
+        self.despikeBox_sizer = wx.StaticBoxSizer(self.despikeBox,wx.VERTICAL)
+
+        self.despikeButton = wx.ToggleButton(self,-1,'ON')
+        self.despikeButton.SetValue(True)
+
+        self.despike_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_lvls_ctrl = wx.SpinCtrl(self,value='2',min=0,max=10)
+        self.despike_sizer1.Add(wx.StaticText(self,-1,'Wavelet Filter Level'),0,wx.ALIGN_LEFT)
+        self.despike_sizer1.Add(self.despike_lvls_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+
+        self.despike_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        wavelet_names = ['haar','coif1', 'coif2', 'coif3', 'coif4', 'coif5'] #use one family
+        self.despike_type_ctrl = wx.ComboBox(self,choices=wavelet_names,style=wx.CB_READONLY)
+        self.despike_sizer2.Add(wx.StaticText(self,-1,'Wavelet Type'),0,wx.EXPAND | wx.ALIGN_RIGHT)
+        self.despike_sizer2.Add(self.despike_type_ctrl,1,wx.EXPAND | wx.ALIGN_RIGHT)
         
+        self.despike_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_sizer.Add(self.despike_sizer1,0,wx.EXPAND)
+        self.despike_sizer.Add(self.despike_sizer2,0,wx.EXPAND)
+
+        self.despikeBox_sizer.Add(self.despikeButton,0,wx.ALIGN_LEFT)
+        self.despikeBox_sizer.Add(self.despike_sizer,0,wx.EXPAND)
+
+        #Smooth, Interpolate and FFT controls
+        self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth, Interpolate 1/H and FFT')
+        self.smoothFFTBox_sizer = wx.StaticBoxSizer(self.smoothFFTBox,wx.VERTICAL)
+
+        self.smoothFFT_sizer = wx.BoxSizer(wx.VERTICAL)
+        windowType_list = ['flat', 'hanning', 'hamming', 'bartlett', 'blackman', 'kaiser']
+        self.smoothFFT_winCtrl = wx.ComboBox(self,choices=windowType_list,style=wx.CB_READONLY)
+        self.smoothFFT_winCtrl.SetValue('hamming')
+  
+        self.smoothFFT_sizer.Add(wx.StaticText(self,-1,'Window Type'),0,wx.EXPAND|wx.ALIGN_CENTER)
+        self.smoothFFT_sizer.Add(self.smoothFFT_winCtrl,1,wx.EXPAND | wx.ALIGN_CENTER)
+
+        self.smoothFFTBox_sizer.Add(self.smoothFFT_sizer,0,wx.EXPAND)
+       
         #Apply button
         self.applyButton = wx.Button(self,wx.ID_APPLY)
         self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -124,11 +163,13 @@ class dHvAFrame(wx.Frame):
         self.ctrlSizer.Add(self.comboBox_bsizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.rangeBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.polyBox_sizer,0,wx.EXPAND,border=5)
+        self.ctrlSizer.Add(self.despikeBox_sizer,0,wx.EXPAND,border=5)
+        self.ctrlSizer.Add(self.smoothFFTBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.buttonSizer,0,wx.EXPAND,border=5)
        
        #set up final sizers
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.plotWindow,1,wx.EXPAND)
+        self.sizer.Add(self.plotWindow,0,wx.EXPAND)
         self.sizer.Add(self.ctrlSizer,0,wx.EXPAND,border=5)
 
         #Layout sizers

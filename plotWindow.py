@@ -27,17 +27,24 @@ class plotWindow(wx.Window):
         y1 = []
         for i in range(0,len(self.polyOrder)):
             y1=np.power(x1,self.polyOrder[i])
-        x2 = np.linspace(self.xmin,self.xmax,100)
+        x2 = x1
         y2 = np.sin(x2)
-        x3 = x2
+        x3 = x1
         y3 = np.exp(x3)
-        x4 = x2
+        x4 = x1
         y4 = np.cosh(x4)
 
         self.subplot1=self.figure.add_subplot(221)
-        self.subplot1.plot(x1,y1,linewidth=2)
+        if len(self.subplot1.lines)==0:
+            self.subplot1.plot(x1,y1,linewidth=2,color='blue')
+        else:
+            self.subplot1.plot(x1,y1,linewidth=2,color='red')
         self.subplot1.set_title('polynomial')
         self.subplot1.set_xlim([self.xmin,self.xmax])
+        if len(self.subplot1.lines)>2:
+            del self.subplot1.lines[1] #delete the previous plot in the first subplot
+            self.subplot1.relim()
+            self.subplot1.autoscale(True,axis=u'y')
         
         self.subplot2=self.figure.add_subplot(222)
         self.subplot2.plot(x2,y2,linewidth=2)
@@ -55,13 +62,5 @@ class plotWindow(wx.Window):
         self.subplot4.set_xlim([self.xmin,self.xmax])
     
     def repaint(self):
-        del self.subplot1.lines[0] #delete the previous plot in the first subplot
         self.canvas.draw()
 
-
-#class dHvA_App(wx.App):
-#    def onInit(self):
-#        self.frame = dHvAFrame(parent = None,title='dHvA Analyser',size=(640,480))
-#        self.frame.Show()
-#        return True
-#
