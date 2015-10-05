@@ -162,13 +162,13 @@ class dHvAFrame(wx.Frame):
         pass
 
     def setXdata(self,e):
-        self.xdata = self.Data_comboBox[0].GetValue()
+        self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
         
     def setInYdata(self,e):
-        self.InYdata = self.Data_comboBox[1].GetValue()
+        self.InYdata = self.vardict[Data_comboBox[1].GetValue()]
 
     def setOutYdata(self,e):
-        self.OutYdata = self.Data_comboBox[2].GetValue()
+        self.OutYdata = self.vardict[self.Data_comboBox[2].GetValue()]
 
     def minH_Change(self,e):
         self.xmin = self.minH_Ctrl.GetValue()

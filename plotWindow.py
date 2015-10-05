@@ -6,31 +6,32 @@ matplotlib.use('WXAgg')
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 from matplotlib.pyplot import gcf, setp
 from matplotlib.figure import Figure
+from mpldatacursor import datacursor
 
 class plotWindow(wx.Window):
     def __init__(self, *args, **kwargs):
         wx.Window.__init__(self,*args,**kwargs)
         self.figure=Figure()
-        self.x = np.linspace(self.xmin, self.xmax,100)
-        self.InY = np.pow(x,2)
-        self.OutY = np.pow(x,2)
-        self.polyOrder = [1,2,3]
         self.xmin=-10
         self.xmax=20
+        self.x = np.linspace(self.xmin, self.xmax,100)
+        self.InY = np.power(self.x,2)
+        self.OutY = np.power(self.x,2)
+        self.polyOrder = [1,2,3]
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.draw()
     
     def draw(self):
         #test plots
-        x1 = np.linspace(self.xmin,self.xmax,100)
+        x1 = self.x
         y1 = []
         for i in range(0,len(self.polyOrder)):
             y1=np.power(x1,self.polyOrder[i])
-        x2 = x1
+        x2 = np.linspace(self.xmin,self.xmax,100)
         y2 = np.sin(x2)
-        x3 = x1
+        x3 = x2
         y3 = np.exp(x3)
-        x4 = x1
+        x4 = x2
         y4 = np.cosh(x4)
 
         self.subplot1=self.figure.add_subplot(221)
