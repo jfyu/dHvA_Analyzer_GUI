@@ -4,6 +4,7 @@ import os
 import numpy as np
 import netCDF4
 from plotWindow import *
+import dHvA_Util
 
 class dHvAFrame(wx.Frame):
     #"""this creates the frame for the whole program"""
@@ -12,7 +13,7 @@ class dHvAFrame(wx.Frame):
         self.dirname=''
         self.varnames =['SampleNumber','CurrentT','CurrentH','A1X','B1X','C1X','D1X','A1Y','B1Y','C1Y','D1Y','A1R','B1R','C1R','D1R','A2X','B2X','C2X','D2X','A2Y','B2Y','C2Y','D2Y','A2R','B2R','C2R','D2R','A3X','B3X','C3X','D3X','A3Y','B3Y','C3Y','D3Y','A3R','B3R','C3R','D3R','A4X','B4X','C4X','D4X','A4Y','B4Y','C4Y','D4Y','A4R','B4R','C4R','D4R','A5X','B5X','C5X','D5X','A5Y','B5Y','C5Y','D5Y','A5R','B5R','C5R','D5R','A6X','B6X','C6X','D6X','A6Y','B6Y','C6Y','D6Y','A6R','B6R','C6R','D6R','EVoltage','FVoltage','GVoltage','HVoltage']
         self.Data_comboBox=[]
-        self.dataFile=None
+        self.data_file=None
         self.xdata = None
         self.InYdata = None
         self.OutYdata = None
@@ -206,7 +207,7 @@ class dHvAFrame(wx.Frame):
         self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
         
     def setInYdata(self,e):
-        self.InYdata = self.vardict[Data_comboBox[1].GetValue()]
+        self.InYdata = self.vardict[self.Data_comboBox[1].GetValue()]
 
     def setOutYdata(self,e):
         self.OutYdata = self.vardict[self.Data_comboBox[2].GetValue()]
@@ -222,17 +223,20 @@ class dHvAFrame(wx.Frame):
         #self.plotWindow.repaint()
 
     def applyChanges(self,e):
-        if self.dataFile != None:
-            self.plotWindow.x = self.xdata
-            self.plotWindow.InY = self.InYdata
-            self.plotWindow.OutY = self.OutYdata
+        if self.data_file != None:
+            #select data based on the Range of Interest 
+            self.plotWindow.x,self.plotWindow.InY,self.plotWindow.OutY = dHvA_Util.select_data(self.xdata,self.InYdata,self.OutYdata,self.xmin,self.xmax)
+            #self.plotWindow.x = self.xdata
+            #self.plotWindow.InY = self.InYdata
+            #self.plotWindow.OutY = self.OutYdata
+
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOrder=[]
             for i in range(0,6):
                 if self.polyOrderCheckBox[i].GetValue() == True:
                     self.plotWindow.polyOrder.append(i+1)
-        self.plotWindow.xmin=self.xmin
-        self.plotWindow.xmax=self.xmax
+        #self.plotWindow.xmin=self.xmin
+        #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
 
