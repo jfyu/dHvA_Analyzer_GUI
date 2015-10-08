@@ -226,6 +226,14 @@ class dHvAFrame(wx.Frame):
         if self.data_file != None:
             #select data based on the Range of Interest 
             self.plotWindow.x,self.plotWindow.InY,self.plotWindow.OutY = dHvA_Util.select_data(self.xdata,self.InYdata,self.OutYdata,self.xmin,self.xmax)
+            try:
+                self.plotWindow.InY[0]
+            except IndexError:
+                message="No Data in Selected Range!"
+                caption = "Error!"
+                warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
+                warningDlg.ShowModal()
+                warningDlg.Destroy()
             #self.plotWindow.x = self.xdata
             #self.plotWindow.InY = self.InYdata
             #self.plotWindow.OutY = self.OutYdata

@@ -1,4 +1,5 @@
 import numpy as np
+import wx
 
 def sort_array(x_in,y_in):
     temp = [x_in,y_in]
@@ -18,7 +19,11 @@ def select_data(x, inY, outY, xmin, xmax):
             temp_field = np.append(temp_field,x[i])
             temp_inY = np.append(temp_inY,inY[i])
             temp_outY = np.append(temp_outY,outY[i])
-            
+    try: 
+        temp_inY[i] #in case the selected range isn't really in the data range
+    except IndexError:
+        print "Data doesn't exist in this range"
+        
     return temp_field, temp_inY, temp_outY
 
 def smooth(x,window_len=11,window='hamming'):
