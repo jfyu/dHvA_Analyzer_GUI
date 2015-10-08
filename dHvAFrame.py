@@ -234,10 +234,10 @@ class dHvAFrame(wx.Frame):
                 warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
                 warningDlg.ShowModal()
                 warningDlg.Destroy()
-            #self.plotWindow.x = self.xdata
-            #self.plotWindow.InY = self.InYdata
-            #self.plotWindow.OutY = self.OutYdata
-
+            #Find phase and find signal
+            self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.outY)
+            #sort the arrays so you can fit the polynomial background
+            self.plotWindow.sortedX, self.plotWindow.SortedSignal = dHvA_Util.sort_array(self.x, self.InY)
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOrder=[]
             for i in range(0,6):

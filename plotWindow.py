@@ -17,6 +17,8 @@ class plotWindow(wx.Window):
         self.x = np.linspace(-10, 20,100)
         self.InY = np.power(self.x,2)
         self.OutY = np.power(self.x,2)
+        self.sortedX = self.x
+        self.sortedSignal = self.InY
         self.polyOrder = [1,2,3]
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.draw()
