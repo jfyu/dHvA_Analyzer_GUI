@@ -35,10 +35,6 @@ class plotWindow(wx.Window):
 #        y3 = np.exp(x3)
 #        x4 = x1
 #        y4 = np.cosh(x4)
-
-        x1 = self.x
-        y11 = self.InY
-        y12 = self.OutY
         self.rawPlot = self.figure.add_subplot(221)
         if len(self.rawPlot.lines)>0:
             del self.rawPlot.lines[0]
@@ -47,6 +43,14 @@ class plotWindow(wx.Window):
         self.rawPlot.plot(self.x,self.OutY,linewidth=2,color='red')
         self.rawPlot.relim()
         self.rawPlot.autoscale(True)
+        
+        self.polyBGPlot = self.figure.add_subplot(222)
+        if len(self.polyBGPlot.lines)>0:
+            del self.polyBGPlot.lines[0]
+            del self.polyBGPlot.lines[0]
+        self.polyBGPlot.plot(self.sortedX,self.sortedSignal,linewidth=2,color='blue')
+        self.polyBGPlot.plot(self.sortedX,self.PolyBG_Y,linewidth=2,color='red')
+
        # self.subplot1=self.figure.add_subplot(221)
        # if len(self.subplot1.lines)==0:
        #     self.subplot1.plot(x1,y1,linewidth=2,color='blue')
