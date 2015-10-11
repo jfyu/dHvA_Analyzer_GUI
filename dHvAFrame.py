@@ -96,7 +96,7 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_SPINCTRLDOUBLE,self.maxH_Change,self.maxH_Ctrl)
 
         #Polynomial BG subtraction
-        self.polyBox = wx.StaticBox(self,-1,'Polynomial Background Subtraction (default ON)')
+        self.polyBox = wx.StaticBox(self,-1,'Polynomial Background Subtraction (default ON), Select Highest Order')
         self.polyBox_sizer = wx.StaticBoxSizer(self.polyBox,wx.VERTICAL)
 
         self.polyButton = wx.ToggleButton(self,-1,'ON')
@@ -107,8 +107,9 @@ class dHvAFrame(wx.Frame):
         for i in range(0,6):
             self.polyOrderCheckBox.append(wx.CheckBox(self,-1,str(i+1)))
             self.polyOrder_sizer.Add(self.polyOrderCheckBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
-        for j in range(0,3):
-            self.polyOrderCheckBox[j].SetValue(True)
+        #for j in range(0,3):
+        #    self.polyOrderCheckBox[j].SetValue(True)
+        self.polyOrderCheckBox[2].SetValue(True)
         self.polyBox_sizer.Add(self.polyButton,0,wx.ALIGN_LEFT)
         self.polyBox_sizer.Add(self.polyOrder_sizer,0,wx.EXPAND)
 
@@ -204,13 +205,40 @@ class dHvAFrame(wx.Frame):
         pass
 
     def setXdata(self,e):
-        self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
+        try:
+            self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
+        except AttributeError:
+            message="Select a File first!"
+            caption = "Error!"
+            warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
+            warningDlg.ShowModal()
+            warningDlg.Destroy()
+            self.OnOpen(self)
+
         
     def setInYdata(self,e):
-        self.InYdata = self.vardict[self.Data_comboBox[1].GetValue()]
+        try:
+            self.InYdata = self.vardict[self.Data_comboBox[1].GetValue()]
+        except AttributeError:
+            message="Select a File first!"
+            caption = "Error!"
+            warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
+            warningDlg.ShowModal()
+            warningDlg.Destroy()
+            self.OnOpen(self)
+
 
     def setOutYdata(self,e):
-        self.OutYdata = self.vardict[self.Data_comboBox[2].GetValue()]
+        try:
+            self.OutYdata = self.vardict[self.Data_comboBox[2].GetValue()]
+        except AttributeError:
+            message="Select a File first!"
+            caption = "Error!"
+            warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
+            warningDlg.ShowModal()
+            warningDlg.Destroy()
+            self.OnOpen(self)
+
 
     def minH_Change(self,e):
         self.xmin = self.minH_Ctrl.GetValue()
@@ -227,7 +255,7 @@ class dHvAFrame(wx.Frame):
             #select data based on the Range of Interest 
             self.plotWindow.x,self.plotWindow.InY,self.plotWindow.OutY = dHvA_Util.select_data(self.xdata,self.InYdata,self.OutYdata,self.xmin,self.xmax)
             try:
-                self.plotWindow.InY[0]
+                self.plotWindow.x[1]
             except IndexError:
                 message="No Data in Selected Range!"
                 caption = "Error!"
@@ -235,14 +263,14 @@ class dHvAFrame(wx.Frame):
                 warningDlg.ShowModal()
                 warningDlg.Destroy()
             #Find phase and find signal
-            self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.outY)
+            self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.OutY)
             #sort the arrays so you can fit the polynomial background
-            self.plotWindow.sortedX, self.plotWindow.SortedSignal = dHvA_Util.sort_array(self.x, self.InY)
+            self.plotWindow.sortedX, self.plotWindow.sortedSignal = dHvA_Util.sort_array(self.xdata, self.InYdata)
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOrder=[]
             for i in range(0,6):
                 if self.polyOrderCheckBox[i].GetValue() == True:
-                    self.plotWindow.polyOrder.append(i+1)
+                    self.plotWindow.polyOrder=i+1
         #self.plotWindow.xmin=self.xmin
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()

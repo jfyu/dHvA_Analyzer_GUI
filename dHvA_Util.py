@@ -20,7 +20,7 @@ def select_data(x, inY, outY, xmin, xmax):
             temp_inY = np.append(temp_inY,inY[i])
             temp_outY = np.append(temp_outY,outY[i])
     try: 
-        temp_inY[i] #in case the selected range isn't really in the data range
+        temp_field[1] #in case the selected range isn't really in the data range
     except IndexError:
         print "Data doesn't exist in this range"
         
@@ -83,3 +83,4 @@ def find_angle(A1X,A1Y):
     
     #print(theta_deg)
     return UnSortSignalA,UnSortSignalAY
+        
