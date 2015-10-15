@@ -98,9 +98,14 @@ def wavelet_filter(A1X, decomp_lev, type):
             decomp[i + 1] = pywt.thresholding.greater(decomp[i+1],-threshold_j)
         
         filt_A1X = pywt.waverec(decomp, type)
-  
-
-        return filt_A1X
+        if len(filt_A1X)!= len(A1X):
+            print 'Reconstructed Wavelet Length does not match'
+            print 'Reconstructed wavelet length is '+str(len(filt_A1X))
+            print 'original length is '+str(len(A1X))
+            print 'return the original array'
+            return A1X
+        else:
+            return filt_A1X
         
     else:
         print('invalid')

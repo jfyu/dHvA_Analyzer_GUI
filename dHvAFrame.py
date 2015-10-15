@@ -206,7 +206,11 @@ class dHvAFrame(wx.Frame):
                 for ii in range(len(self.varnames)):
                     self.Data_comboBox[i].Append(self.varnames[ii])
         dlg.Destroy()
-
+        if self.Data_comboBox[0].GetValue() != "":
+            #In case you want combo box to stay the same while selecting a different file
+            self.setXdata(self)
+            self.setInYdata(self)
+            self.setOutYdata(self)
     def OnSave(self,e):
         pass
 

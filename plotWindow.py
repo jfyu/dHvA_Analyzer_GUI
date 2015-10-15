@@ -70,8 +70,6 @@ class plotWindow(wx.Window):
             self.despikeY = dHvA_Util.wavelet_filter(self.noBG_Y,self.decompLevel,self.waveletType)
         else:
             self.despikeY = self.noBG_Y
-        print len(self.sortedX)
-        print len(self.despikeY)
         self.despikePlot.plot(self.sortedX,self.despikeY,linewidth=2,color='red')
         self.despikePlot.relim()
         self.despikePlot.autoscale(True)
