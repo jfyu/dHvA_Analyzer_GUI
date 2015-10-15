@@ -19,7 +19,8 @@ class dHvAFrame(wx.Frame):
         self.OutYdata = None
         self.xmin = 0
         self.xmax = 16
-
+        self.despikeLvl = 2
+        self.despikeWaveType = 'coif2'
         #same initialization as wx.Frame
         wx.Frame.__init__(self,*args,**kwargs)
 
@@ -103,22 +104,22 @@ class dHvAFrame(wx.Frame):
         self.polyButton.SetValue(True)
 
         self.polyOrder_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.polyOrderCheckBox=[]
+        self.polyOrderRadioButton=[]
         for i in range(0,6):
-            self.polyOrderCheckBox.append(wx.CheckBox(self,-1,str(i+1)))
-            self.polyOrder_sizer.Add(self.polyOrderCheckBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
+            self.polyOrderRadioButton.append(wx.RadioButton(self,-1,str(i+1)))
+            self.polyOrder_sizer.Add(self.polyOrderRadioButton[i],1,wx.EXPAND | wx.ALIGN_CENTER)
         #for j in range(0,3):
         #    self.polyOrderCheckBox[j].SetValue(True)
-        self.polyOrderCheckBox[2].SetValue(True)
+        self.polyOrderRadioButton[2].SetValue(True)
         self.polyBox_sizer.Add(self.polyButton,0,wx.ALIGN_LEFT)
         self.polyBox_sizer.Add(self.polyOrder_sizer,0,wx.EXPAND)
 
         #despike 
-        self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default ON)')
+        self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default OFF)')
         self.despikeBox_sizer = wx.StaticBoxSizer(self.despikeBox,wx.VERTICAL)
 
         self.despikeButton = wx.ToggleButton(self,-1,'ON')
-        self.despikeButton.SetValue(True)
+        self.despikeButton.SetValue(False)
 
         self.despike_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
         self.despike_lvls_ctrl = wx.SpinCtrl(self,value='2',min=0,max=10)
@@ -128,6 +129,7 @@ class dHvAFrame(wx.Frame):
         self.despike_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
         wavelet_names = ['haar','coif1', 'coif2', 'coif3', 'coif4', 'coif5'] #use one family
         self.despike_type_ctrl = wx.ComboBox(self,choices=wavelet_names,style=wx.CB_READONLY)
+        self.despike_type_ctrl.SetValue('coif2')
         self.despike_sizer2.Add(wx.StaticText(self,-1,'Wavelet Type'),0,wx.EXPAND | wx.ALIGN_RIGHT)
         self.despike_sizer2.Add(self.despike_type_ctrl,1,wx.EXPAND | wx.ALIGN_RIGHT)
         
@@ -137,6 +139,10 @@ class dHvAFrame(wx.Frame):
 
         self.despikeBox_sizer.Add(self.despikeButton,0,wx.ALIGN_LEFT)
         self.despikeBox_sizer.Add(self.despike_sizer,0,wx.EXPAND)
+
+        #despike events
+        self.Bind(wx.EVT_SPINCTRL,self.despikeLevel,self.despike_lvls_ctrl)
+        self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
 
         #Smooth, Interpolate and FFT controls
         self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth, Interpolate 1/H and FFT')
@@ -250,6 +256,12 @@ class dHvAFrame(wx.Frame):
         #self.plotWindow.draw()
         #self.plotWindow.repaint()
 
+    def despikeLevel(self,e):
+        self.despikeLvl=self.despike_lvls_ctrl.GetValue()
+
+    def despikeType(self,e):
+        self.despikeWaveType = self.despike_type_ctrl.GetValue()
+    
     def applyChanges(self,e):
         if self.data_file != None:
             #select data based on the Range of Interest 
@@ -269,8 +281,13 @@ class dHvAFrame(wx.Frame):
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOrder=[]
             for i in range(0,6):
-                if self.polyOrderCheckBox[i].GetValue() == True:
+                if self.polyOrderRadioButton[i].GetValue() == True:
                     self.plotWindow.polyOrder=i+1
+        if self.despikeButton.GetValue() == True:
+            self.plotWindow.despikeOn = True
+            self.plotWindow.decompLevel = self.despikeLvl
+            self.plotWindow.waveletType = self.despikeWaveType
+        self.plotWindow.smoothType = self.smoothFFT_winCtrl.GetValue()
         #self.plotWindow.xmin=self.xmin
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()

@@ -1,5 +1,6 @@
 import numpy as np
 from itertools import count,izip
+import pywt
 
 def sort_array(x_in,y_in):
     temp = [x_in,y_in]
@@ -83,4 +84,24 @@ def find_angle(A1X,A1Y):
     
     #print(theta_deg)
     return UnSortSignalA,UnSortSignalAY
+
+def wavelet_filter(A1X, decomp_lev, type):
+    if isinstance(decomp_lev, int) and decomp_lev > 0:
+        #print(pywt.wavelist('bior'))
+        decomp = pywt.wavedec(A1X[:], type, level=decomp_lev)
+      
+        sigma_j = np.median(abs(decomp[-1]))/0.6745
+        threshold_j = sigma_j*np.sqrt(2*np.log(len(A1X)))
+    
+        for i in range(decomp_lev):
+            decomp[i + 1] = pywt.thresholding.less(decomp[i+1],threshold_j)
+            decomp[i + 1] = pywt.thresholding.greater(decomp[i+1],-threshold_j)
         
+        filt_A1X = pywt.waverec(decomp, type)
+  
+
+        return filt_A1X
+        
+    else:
+        print('invalid')
+
