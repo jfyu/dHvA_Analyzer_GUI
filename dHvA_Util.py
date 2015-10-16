@@ -1,7 +1,7 @@
 import numpy as np
 from itertools import count,izip
 import pywt
-
+from scipy.interpolate import interp1d,InterpolatedUnivariateSpline
 def sort_array(x_in,y_in):
     temp = [x_in,y_in]
     temp = zip(*temp)
@@ -110,3 +110,33 @@ def wavelet_filter(A1X, decomp_lev, type):
     else:
         print('invalid')
 
+def next_pow_2(N):
+    #used to define number of points in the interpolation
+    i = 0
+    two_to_the_i = 1
+    while N>two_to_the_i:
+        i += 1
+        two_to_the_i *= 2
+    return i
+
+def inv_field(sortedField,signal):
+    #we have to interpolate for the x axis of FFT, which is 1/B and needs to be evenly spaced
+    inv_B = []#for the 1/B, x axis
+    interp_data = []#for the y axis, where one performs FFT
+    Pow_2 = next_pow_2( len(sortedField) )   #next_pow_2 is defined before
+    N = pow(2,Pow_2)
+    I_B_min = 1.0/max(sortedField)
+    I_B_max = 1.0/min(sortedField)
+    Delta_I_B = (I_B_max - I_B_min)/N
+    i=0
+    while i<N:
+        inv_B.append(I_B_min+i*Delta_I_B) #create the inverse_B array
+        i+=1
+    f = InterpolatedUnivariateSpline(sortedField,signal,k=3)#build a function that extrapolates as well as interpolates so it doesn't go out of bounds for the new x
+    interp_data=f(inv_B)
+    #try:
+    #    interp_data = interp1d(sortedField,inv_B,kind='cubic')#get interpolated data
+    #except ValueError:
+    #    print 'interpolation outside range. Extrapolation required'
+
+    return inv_B, interp_data, Delta_I_B 
