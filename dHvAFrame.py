@@ -5,6 +5,7 @@ import numpy as np
 import netCDF4
 from plotWindow import *
 import dHvA_Util
+from FFTPanel import *
 
 class dHvAFrame(wx.Frame):
     #"""this creates the frame for the whole program"""
@@ -57,6 +58,7 @@ class dHvAFrame(wx.Frame):
 
        #set up plot windows
         self.plotWindow = plotWindow(self)
+        self.FFTPanel = FFTPanel(self)
 
         #Sizers for the comboBoxes 
         self.comboBox_box = wx.StaticBox(self,-1,'Select Data Arrays')
@@ -309,6 +311,11 @@ class dHvAFrame(wx.Frame):
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
+        self.FFTPanel.FFTWindow.Y = self.plotWindow.windowed_dataY
+        self.FFTPanel.FFTWindow.delta_inv_x = self.plotWindow.delta_inv_x
+        self.FFTPanel.Show()
+        self.FFTPanel.FFTWindow.draw()
+        self.FFTPanel.FFTWindow.repaint()
 
 
 

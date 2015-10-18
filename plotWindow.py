@@ -84,6 +84,30 @@ class plotWindow(wx.Window):
         else:
             self.despikeY = self.noBG_Y
         
+        self.despikePlot.plot(self.sortedX,self.despikeY,linewidth=2,color='red')
+        self.despikePlot.relim()
+        self.despikePlot.autoscale(True)
+        self.despikePlot.set_title('Despike')
+        self.despikePlot.set_xlabel('Field (T)')
+        self.despikePlot.legend(['data','despiked'],fontsize=10) 
+        self.figure.tight_layout()
+
+        #plot Smooth
+        self.smoothPlot = self.figure.add_subplot(224)
+        if len(self.smoothPlot.lines)>0:
+            del self.smoothPlot.lines[0]
+        #smooth and window the data
+                    
+#        self.DeltaFreqY = 1/self.delta_inv_x 
+#        #padd the data
+#        pad_mult = 10
+#        zero_matrixY = np.zeros(len(self.windowed_dataY)*pad_mult/2)
+#        self.pad_wind_dataY = np.append(self.windowed_dataY, zero_matrixY)
+#        # pad_wind_data = np.append(zero_matrix, pad_wind_data)
+#
+#        self.FreqY, self.FFT_SignalY = dHvA_Util.take_fft(self.pad_wind_dataY, 20, self.DeltaFreqY)
+#        self.smoothPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue')
+#
         #invert the field
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.sortedX,self.despikeY)
 
@@ -95,36 +119,11 @@ class plotWindow(wx.Window):
         else:
             self.smoothY = self.interp_data
             self.windowed_dataY = self.smoothY
-
-        self.despikePlot.plot(self.sortedX,self.despikeY,linewidth=2,color='red')
-        self.despikePlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='green')
-        self.despikePlot.relim()
-        self.despikePlot.autoscale(True)
-        self.despikePlot.set_title('Despike, Smooth and Window')
-        self.despikePlot.set_xlabel('Field (T)')
-        self.despikePlot.legend(['data','despiked','smoothed'],fontsize=10) 
-        self.figure.tight_layout()
-
-        #plot FFT
-        self.FFTPlot = self.figure.add_subplot(224)
-        if len(self.FFTPlot.lines)>0:
-            del self.FFTPlot.lines[0]
-        #smooth and window the data
-                    
-        self.DeltaFreqY = 1/self.delta_inv_x 
-        #padd the data
-        pad_mult = 10
-        zero_matrixY = np.zeros(len(self.windowed_dataY)*pad_mult/2)
-        self.pad_wind_dataY = np.append(self.windowed_dataY, zero_matrixY)
-        # pad_wind_data = np.append(zero_matrix, pad_wind_data)
-
-        self.FreqY, self.FFT_SignalY = dHvA_Util.take_fft(self.pad_wind_dataY, 20, self.DeltaFreqY)
-        self.FFTPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue')
-        self.FFTPlot.set_xlabel('dHvA Frequency (1/T)')
-        self.FFTPlot.set_ylabel('Amplitude (a.u.)')
-        self.FFTPlot.set_title('FFT')
-        self.FFTPlot.relim()
-        self.FFTPlot.autoscale(True)
+        self.smoothPlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='green')
+        self.smoothPlot.set_xlabel('1/B (1/T)')
+        self.smoothPlot.set_title('Smooth and Windowing')
+        self.smoothPlot.relim()
+        self.smoothPlot.autoscale(True)
         self.figure.tight_layout()
     def repaint(self):
         self.canvas.draw()
