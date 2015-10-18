@@ -3,23 +3,27 @@ import numpy as np
 import matplotlib
 matplotlib.use('WXAgg')
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
+from matplotlib.backends.backend_wx import NavigationToolbar2Wx
 from matplotlib.pyplot import gcf, setp
 from matplotlib.figure import Figure
-from mpldatacursor import datacursor,HighlightingDataCursor
+from mpldatacursor import datacursor
 import dHvA_Util
 from scipy import signal
 
 
 class FFTWindow(wx.Window):
     def __init__(self, *args, **kwargs):
-        wx.Window.__init__(self,*args,**kwargs)
+        self.window = wx.Window.__init__(self,*args,**kwargs)
         self.figure=Figure()
         self.x = np.linspace(-10, 20,100)
         self.Y = np.sin(self.x)
         self.delta_inv_x = 30/100.0
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        self.draw()
- 
+        self.canvas.mpl_connect('button_press_event',self.coordPrint)
+        self.toolbar = NavigationToolbar2Wx(self.canvas)
+        self.toolbar.Realize()
+        self.toolbar.Show()
+        #self.draw()
 
     def draw(self):
         self.FFTPlot = self.figure.add_subplot(111)
@@ -44,4 +48,8 @@ class FFTWindow(wx.Window):
     def repaint(self):
          self.canvas.draw()
 
+    def coordPrint(self,e):
+        print "mouse clicked"
+        print e.xdata
+        print e.ydata
 

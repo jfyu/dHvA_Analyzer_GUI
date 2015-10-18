@@ -311,11 +311,11 @@ class dHvAFrame(wx.Frame):
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
-        self.FFTPanel.FFTWindow.Y = self.plotWindow.windowed_dataY
-        self.FFTPanel.FFTWindow.delta_inv_x = self.plotWindow.delta_inv_x
+        self.FFTPanel.Y = self.plotWindow.windowed_dataY
+        self.FFTPanel.delta_inv_x = self.plotWindow.delta_inv_x
         self.FFTPanel.Show()
-        self.FFTPanel.FFTWindow.draw()
-        self.FFTPanel.FFTWindow.repaint()
+        self.FFTPanel.draw()
+        self.FFTPanel.repaint()
 
 
 
