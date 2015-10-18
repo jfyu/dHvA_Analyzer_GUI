@@ -132,11 +132,21 @@ def inv_field(sortedField,signal):
     while i<N:
         inv_B.append(I_B_min+i*Delta_I_B) #create the inverse_B array
         i+=1
-    f = InterpolatedUnivariateSpline(sortedField,signal,k=3)#build a function that extrapolates as well as interpolates so it doesn't go out of bounds for the new x
+    f = InterpolatedUnivariateSpline(sortedField,signal,k=3)#build a function that extrapolates as well as interpolates so it doesn't go out of bounds for the new x. See doc for more information. Interpolation and extrapolation using cubic spline
     interp_data=f(inv_B)
     #try:
     #    interp_data = interp1d(sortedField,inv_B,kind='cubic')#get interpolated data
     #except ValueError:
     #    print 'interpolation outside range. Extrapolation required'
 
-    return inv_B, interp_data, Delta_I_B 
+    return inv_B, interp_data, Delta_I_B
+
+
+def take_fft(y,power,delta_freq):
+    pow_res = np.power(2,power)
+    temp_fft = np.fft.fft(y,pow_res)
+    temp_y = np.abs(temp_fft)
+    temp_x = np.array(range(len(temp_y)/2))
+    freq_array = delta_freq*temp_x/len(temp_y)
+    fft_array = temp_y[0:len(temp_y)/2]
+    return freq_array, fft_array

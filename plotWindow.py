@@ -6,8 +6,9 @@ matplotlib.use('WXAgg')
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 from matplotlib.pyplot import gcf, setp
 from matplotlib.figure import Figure
-from mpldatacursor import datacursor
+from mpldatacursor import datacursor,HighlightingDataCursor
 import dHvA_Util
+from scipy import signal
 
 class plotWindow(wx.Window):
     def __init__(self, *args, **kwargs):
@@ -23,7 +24,10 @@ class plotWindow(wx.Window):
         self.decompLevel = 2
         self.waveletType = 'coif2'
         self.despikeOn = False
+        self.smoothOn= False
+        self.polyOn=False
         self.smoothWinType = 'hamming'
+        self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.x,self.InY)
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
         self.draw()
     
@@ -40,12 +44,18 @@ class plotWindow(wx.Window):
         self.rawPlot.autoscale(True)
         self.rawPlot.set_title('Raw data')
         self.rawPlot.set_xlabel('Field (T)')
-        self.rawPlot.legend(['In Phase Y','Out Phase Y'])
+        self.rawPlot.legend(['In Phase','Out Phase'],fontsize=10)
 
         #plot Polynomial BG
-        self.PolyBG_Coeff = np.polyfit(self.sortedX,self.sortedSignal,self.polyOrder)
-        self.PolyBG_Y = np.polyval(self.PolyBG_Coeff,self.sortedX)
-        self.noBG_Y = self.sortedSignal-self.PolyBG_Y
+        if self.polyOn:
+            self.PolyBG_Coeff = np.polyfit(self.sortedX,self.sortedSignal,self.polyOrder)
+            self.PolyBG_Y = np.polyval(self.PolyBG_Coeff,self.sortedX)
+            self.noBG_Y = self.sortedSignal-self.PolyBG_Y
+        else:
+            self.noBG_Y = self.sortedSignal
+            self.PolyBG_Y = np.zeros(len(self.sortedSignal))
+        
+                    
         self.polyBGPlot = self.figure.add_subplot(222)
         if len(self.polyBGPlot.lines)>0:
             del self.polyBGPlot.lines[0]
@@ -58,36 +68,64 @@ class plotWindow(wx.Window):
         self.polyBGPlot.autoscale(True)
         self.polyBGPlot.set_title('Polynomial BG Removal')
         self.polyBGPlot.set_xlabel('Field (T)')
-        self.polyBGPlot.legend(['Raw Data','Poly BG','Subtraction'])
+        self.polyBGPlot.legend(['Raw','Poly BG','no BG'],fontsize=10)
+        #using datacursor makes the program load up really slow
+        #HighlightingDataCursor(self.polyBGPlot.lines) 
 
         #plot despike
         self.despikePlot = self.figure.add_subplot(223)
         if len(self.despikePlot.lines)>0:
             del self.despikePlot.lines[0]
             del self.despikePlot.lines[0]
+        #    del self.despikePlot.lines[0]
         self.despikePlot.plot(self.sortedX,self.noBG_Y,linewidth=2,color='blue')
         if self.despikeOn:
             self.despikeY = dHvA_Util.wavelet_filter(self.noBG_Y,self.decompLevel,self.waveletType)
         else:
             self.despikeY = self.noBG_Y
+        
+        #invert the field
+        self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.sortedX,self.despikeY)
+
+        if self.smoothOn:
+            self.smoothY = dHvA_Util.smooth(self.interp_data,30,self.smoothWinType)
+            window_func = eval('signal.'+self.smoothWinType)
+            window_to_use = window_func(len(self.smoothY))
+            self.windowed_dataY = window_to_use*self.smoothY
+        else:
+            self.smoothY = self.interp_data
+            self.windowed_dataY = self.smoothY
+
         self.despikePlot.plot(self.sortedX,self.despikeY,linewidth=2,color='red')
+        self.despikePlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='green')
         self.despikePlot.relim()
         self.despikePlot.autoscale(True)
-        self.despikePlot.set_title('Despike')
+        self.despikePlot.set_title('Despike, Smooth and Window')
         self.despikePlot.set_xlabel('Field (T)')
-        self.despikePlot.legend(['data','despiked data']) 
+        self.despikePlot.legend(['data','despiked','smoothed'],fontsize=10) 
         self.figure.tight_layout()
 
         #plot FFT
         self.FFTPlot = self.figure.add_subplot(224)
         if len(self.FFTPlot.lines)>0:
             del self.FFTPlot.lines[0]
-        #invert the field
+        #smooth and window the data
+                    
+        self.DeltaFreqY = 1/self.delta_inv_x 
+        #padd the data
+        pad_mult = 10
+        zero_matrixY = np.zeros(len(self.windowed_dataY)*pad_mult/2)
+        self.pad_wind_dataY = np.append(self.windowed_dataY, zero_matrixY)
+        # pad_wind_data = np.append(zero_matrix, pad_wind_data)
 
-        self.FFTPlot.set_xlabel('1/B (1/T)')
+        self.FreqY, self.FFT_SignalY = dHvA_Util.take_fft(self.pad_wind_dataY, 20, self.DeltaFreqY)
+        self.FFTPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue')
+        self.FFTPlot.set_xlabel('dHvA Frequency (1/T)')
         self.FFTPlot.set_ylabel('Amplitude (a.u.)')
         self.FFTPlot.set_title('FFT')
-
+        self.FFTPlot.relim()
+        self.FFTPlot.autoscale(True)
+        self.figure.tight_layout()
     def repaint(self):
         self.canvas.draw()
 

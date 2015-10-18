@@ -21,6 +21,7 @@ class dHvAFrame(wx.Frame):
         self.xmax = 16
         self.despikeLvl = 2
         self.despikeWaveType = 'coif2'
+        self.smoothWinType = 'hamming'
         #same initialization as wx.Frame
         wx.Frame.__init__(self,*args,**kwargs)
 
@@ -100,7 +101,7 @@ class dHvAFrame(wx.Frame):
         self.polyBox = wx.StaticBox(self,-1,'Polynomial Background Subtraction (default ON), Select Highest Order')
         self.polyBox_sizer = wx.StaticBoxSizer(self.polyBox,wx.VERTICAL)
 
-        self.polyButton = wx.ToggleButton(self,-1,'ON')
+        self.polyButton = wx.CheckBox(self,-1,'ON')
         self.polyButton.SetValue(True)
 
         self.polyOrder_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -118,7 +119,7 @@ class dHvAFrame(wx.Frame):
         self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default OFF)')
         self.despikeBox_sizer = wx.StaticBoxSizer(self.despikeBox,wx.VERTICAL)
 
-        self.despikeButton = wx.ToggleButton(self,-1,'ON')
+        self.despikeButton = wx.CheckBox(self,-1,'ON')
         self.despikeButton.SetValue(False)
 
         self.despike_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
@@ -145,18 +146,25 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
 
         #Smooth, Interpolate and FFT controls
-        self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth, Interpolate 1/H and FFT')
+        self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth and Windowing, default OFF')
         self.smoothFFTBox_sizer = wx.StaticBoxSizer(self.smoothFFTBox,wx.VERTICAL)
 
         self.smoothFFT_sizer = wx.BoxSizer(wx.VERTICAL)
         windowType_list = ['flat', 'hanning', 'hamming', 'bartlett', 'blackman', 'kaiser']
         self.smoothFFT_winCtrl = wx.ComboBox(self,choices=windowType_list,style=wx.CB_READONLY)
         self.smoothFFT_winCtrl.SetValue('hamming')
-  
+
+        self.smoothButton = wx.CheckBox(self,-1,'ON')
+        self.smoothButton.SetValue(False)
+ 
+        self.smoothFFT_sizer.Add(self.smoothButton,1,wx.EXPAND | wx.ALIGN_CENTER)
         self.smoothFFT_sizer.Add(wx.StaticText(self,-1,'Window Type'),0,wx.EXPAND|wx.ALIGN_CENTER)
         self.smoothFFT_sizer.Add(self.smoothFFT_winCtrl,1,wx.EXPAND | wx.ALIGN_CENTER)
 
         self.smoothFFTBox_sizer.Add(self.smoothFFT_sizer,0,wx.EXPAND)
+
+        #SmoothEvent
+        self.Bind(wx.EVT_COMBOBOX,self.smoothType,self.smoothFFT_winCtrl)
        
         #Apply button
         self.applyButton = wx.Button(self,wx.ID_APPLY)
@@ -266,6 +274,9 @@ class dHvAFrame(wx.Frame):
     def despikeType(self,e):
         self.despikeWaveType = self.despike_type_ctrl.GetValue()
     
+    def smoothType(self,e):
+        self.smoothWinType = self.smoothFFT_winCtrl.GetValue()
+
     def applyChanges(self,e):
         if self.data_file != None:
             #select data based on the Range of Interest 
@@ -279,7 +290,7 @@ class dHvAFrame(wx.Frame):
                 warningDlg.ShowModal()
                 warningDlg.Destroy()
             #Find phase and find signal
-            self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.OutY)
+            #self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.OutY)
             #sort the arrays so you can fit the polynomial background
             self.plotWindow.sortedX, self.plotWindow.sortedSignal = dHvA_Util.sort_array(self.xdata, self.InYdata)
         if self.polyButton.GetValue() == True:
@@ -291,7 +302,9 @@ class dHvAFrame(wx.Frame):
             self.plotWindow.despikeOn = True
             self.plotWindow.decompLevel = self.despikeLvl
             self.plotWindow.waveletType = self.despikeWaveType
-        self.plotWindow.smoothType = self.smoothFFT_winCtrl.GetValue()
+        if self.smoothButton.GetValue()==True:
+            self.smoothOn = True
+            self.plotWindow.smoothWinType = self.smoothWinType 
         #self.plotWindow.xmin=self.xmin
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
