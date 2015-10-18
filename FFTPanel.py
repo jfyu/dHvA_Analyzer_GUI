@@ -1,27 +1,54 @@
 import wx
 #from FFTWindow import * 
-from matplotlib.backends.backend_wx import NavigationToolbar2Wx
 import numpy as np
 import matplotlib
 matplotlib.use('WXAgg')
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
 from matplotlib.backends.backend_wx import NavigationToolbar2Wx
-from matplotlib.pyplot import gcf, setp
 from matplotlib.figure import Figure
-from mpldatacursor import datacursor
+from matplotlib.widgets import Cursor
 import dHvA_Util
-from scipy import signal
-
+from CustomDataTable import *
+import os
+import csv
 
 class FFTPanel(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self,*args,**kwargs)
+        #Toolbar
+        tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
+        tsize = (24,24)
+        save_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR,tsize)
+        tb.SetToolBitmapSize(tsize)
+
+        #menu
+        filemenu=wx.Menu()
+        menuSave = filemenu.Append(wx.ID_OPEN,"OPEN","Open a data file")
+        menuExit = filemenu.Append(wx.ID_EXIT, "EXIT", "Terminate the Program")
+
+        #Creating the menu bar and status bar
+        menuBar = wx.MenuBar()
+        menuBar.Append(filemenu,"File")
+        self.SetMenuBar(menuBar)
+        self.CreateStatusBar()
+        
+        #Events for menu
+        self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
+        self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
+
+
+        #Events on toolbar
+        tb.AddLabelTool(10,'Save',save_bmp)
+        self.Bind(wx.EVT_TOOL,self.OnSave,id=10)
+
+
+        #do all the figure plotting things. Reason why we don't do that in a separate class is because the navigation tool bar doesn't like to work
         self.figure=Figure()
         self.x = np.linspace(-10, 20,100)
         self.Y = np.sin(self.x)
         self.delta_inv_x = 30/100.0
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
-        self.canvas.mpl_connect('button_press_event',self.coordPrint)
+        self.canvas.mpl_connect('pick_event',self.coordPrint)
         self.draw()
 
         #canvas tool bar
@@ -33,9 +60,26 @@ class FFTPanel(wx.Frame):
         self.toolbar.update()
         self.toolbar.Show()
         #sizers
-        self.sizer = wx.BoxSizer(wx.VERTICAL)
-        self.sizer.Add(self.canvas,0,wx.EXPAND)
-        self.sizer.Add(self.toolbar,0,wx.LEFT|wx.EXPAND)
+        self.CanvasSizer = wx.BoxSizer(wx.VERTICAL)
+        self.CanvasSizer.Add(self.canvas,0,wx.EXPAND)
+        self.CanvasSizer.Add(self.toolbar,0,wx.LEFT|wx.EXPAND)
+
+
+        #add the grid to display the peaks 
+
+        #self.tableSizer = wx.BoxSizer(wx.VERTICAL)
+        self.DataTable = CustTableGrid(self)#initially two columns and two rows
+        #self.row = 0 #keep track of how many peaks added
+        #save button
+        #self.saveButton =wx.Button(self,-1,'Save Data')
+        #self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
+
+        #self.tableSizer.Add(self.saveButton,0,wx.EXPAND)
+        #self.tableSizer.Add(self.DataTable,0,wx.EXPAND)
+
+        self.sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.sizer.Add(self.CanvasSizer,0,wx.EXPAND)
+        self.sizer.Add(self.DataTable,0,wx.EXPAND)
         self.SetSizer(self.sizer)     
         self.SetAutoLayout(1)
         self.sizer.Fit(self)
@@ -56,18 +100,53 @@ class FFTPanel(wx.Frame):
         # pad_wind_data = np.append(zero_matrix, pad_wind_data)
 
         self.FreqY, self.FFT_SignalY = dHvA_Util.take_fft(self.pad_wind_dataY, 20, self.DeltaFreqY)
-        self.FFTPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue')
+        self.FFTPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue',picker=1)
         self.FFTPlot.set_xlabel('dHvA Frequency (1/T)')
         self.FFTPlot.set_ylabel('Amplitude (a.u.)')
         self.FFTPlot.set_title('FFT')
         self.FFTPlot.relim()
         self.FFTPlot.autoscale(True)
 
+        #add cursor to select points
+        self.cursor = Cursor(self.FFTPlot,color='black',linewidth=1)
+
     def repaint(self):
          self.canvas.draw()
 
     def coordPrint(self,e):
-        print "mouse clicked"
-        print e.xdata
-        print e.ydata
+        print "mouse clicked onto data"
+        #because there are a lot of indices in one click, use only the first one
+        picked_x = e.artist.get_xdata()[e.ind[0]]
+        picked_y = e.artist.get_ydata()[e.ind[0]]
+        print picked_x, picked_y
+        self.row = self.DataTable.table.GetNumberRows()
+        for i in range(0,self.row):
+            if self.DataTable.table.IsEmptyCell(i,0)==True:
+                self.row = i
+                break
+        
+        self.DataTable.table.SetValue(self.row,0,picked_x)
+        self.DataTable.table.SetValue(self.row,1,picked_y)
+        #self.row=self.DataTable.table.AppendRow()
+        print self.row
+        #self.row=self.row+1
+        #print e.ind
+        #print zip(e.artist.get_xdata()[e.ind],e.artist.get_ydata()[e.ind])
 
+    def OnSave(self,e):
+        dlg = wx.FileDialog(
+            self, message="Save file as ...", defaultDir=os.getcwd(), 
+            defaultFile="", wildcard="All files (*.*)|*.*", style=wx.SAVE
+            )
+        if dlg.ShowModal() == wx.ID_OK:
+            path = dlg.GetPath()
+            #data = [[1,2],[3,4],[5,6]]
+            with open(path,'wb') as file:
+                writer=csv.writer(file,delimiter=',')
+                writer.writerows(self.DataTable.table.data)
+        dlg.Destroy()
+    
+    def OnExit(self,e):
+        self.Close(True)  # Close the frame.
+
+        

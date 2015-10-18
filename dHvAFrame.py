@@ -46,15 +46,15 @@ class dHvAFrame(wx.Frame):
         tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
         tsize = (24,24)
         open_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, tsize)
-        save_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR,tsize)
+        #save_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR,tsize)
         tb.SetToolBitmapSize(tsize)
 
         #Events on toolbar
         tb.AddLabelTool(10,'Open',open_bmp)
         self.Bind(wx.EVT_TOOL,self.OnOpen,id=10)
 
-        tb.AddLabelTool(20,'Save',save_bmp)
-        self.Bind(wx.EVT_TOOL,self.OnSave,id=20)
+        #tb.AddLabelTool(20,'Save',save_bmp)
+        #self.Bind(wx.EVT_TOOL,self.OnSave,id=20)
 
        #set up plot windows
         self.plotWindow = plotWindow(self)
@@ -221,8 +221,8 @@ class dHvAFrame(wx.Frame):
             self.setXdata(self)
             self.setInYdata(self)
             self.setOutYdata(self)
-    def OnSave(self,e):
-        pass
+    #def OnSave(self,e):
+    #    pass
 
     def setXdata(self,e):
         try:
