@@ -54,12 +54,13 @@ class plotWindow(wx.Window):
         self.draw()
     
     def draw(self):
-       
+        self.figure.clf()
         #plot raw data
         self.rawPlot = self.figure.add_subplot(221)
-        if len(self.rawPlot.lines)>0:
-            del self.rawPlot.lines[0]
-            del self.rawPlot.lines[0] #delete the second one, since the first one is deleted, the index returns to 0
+        #if len(self.rawPlot.lines)>0:
+        #    del self.rawPlot.lines[0]
+        #    del self.rawPlot.lines[0] #delete the second one, since the first one is deleted, the index returns to 0
+        #print len(self.rawPlot.lines)
         self.rawPlot.plot(self.x,self.InY,linewidth=2,color='blue')
         self.rawPlot.plot(self.x,self.OutY,linewidth=2,color='red')
         self.rawPlot.relim()
@@ -87,10 +88,10 @@ class plotWindow(wx.Window):
         
                     
         self.polyBGPlot = self.figure.add_subplot(222)
-        if len(self.polyBGPlot.lines)>0:
-            del self.polyBGPlot.lines[0]
-            del self.polyBGPlot.lines[0]
-            del self.polyBGPlot.lines[0]
+       # if len(self.polyBGPlot.lines)>0:
+       #     del self.polyBGPlot.lines[0]
+       #     del self.polyBGPlot.lines[0]
+       #     del self.polyBGPlot.lines[0]
         self.polyBGPlot.plot(self.sortedX,self.sortedSignal,linewidth=2,color='blue')
         self.polyBGPlot.plot(self.sortedX,self.PolyBG_Y,linewidth=2,color='red')
         self.polyBGPlot.plot(self.sortedX,self.noBG_Y,linewidth=2,color='green')
@@ -103,9 +104,9 @@ class plotWindow(wx.Window):
 
         #plot despike
         self.despikePlot = self.figure.add_subplot(223)
-        if len(self.despikePlot.lines)>0:
-            del self.despikePlot.lines[0]
-            del self.despikePlot.lines[0]
+        #if len(self.despikePlot.lines)>0:
+        #    del self.despikePlot.lines[0]
+        #    del self.despikePlot.lines[0]
         self.despikePlot.plot(self.sortedX,self.noBG_Y,linewidth=2,color='blue')
         if self.despikeOn:
             self.despikeY = dHvA_Util.wavelet_filter(self.noBG_Y,self.decompLevel,self.waveletType)
@@ -122,9 +123,9 @@ class plotWindow(wx.Window):
         
         #plot Smooth
         self.smoothPlot = self.figure.add_subplot(224)
-        if len(self.smoothPlot.lines)>0:
-            del self.smoothPlot.lines[0]
-            del self.smoothPlot.lines[0]
+        #if len(self.smoothPlot.lines)>0:
+        #    del self.smoothPlot.lines[0]
+        #    del self.smoothPlot.lines[0]
         
         #smooth and window the data
         #invert the field

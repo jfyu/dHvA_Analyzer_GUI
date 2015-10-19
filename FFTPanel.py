@@ -158,9 +158,13 @@ class FFTPanel(wx.Frame):
         self.ylim=[0,1]
     
     def draw(self):
+        self.figure.clf() #clear the figure
         self.FFTPlot = self.figure.add_subplot(111)
-        if len(self.FFTPlot.lines)>0:
-            del self.FFTPlot.lines[0]
+        #if len(self.FFTPlot.lines)>0:
+        #    for i in range(0,len(self.FFTPlot.lines)):
+        #        del self.FFTPlot.lines[0]
+        #self.FFTPlot.cla()
+        print len(self.FFTPlot.lines)
         #smooth and window the data
         self.DeltaFreqY = 1/self.delta_inv_x 
         #padd the data
