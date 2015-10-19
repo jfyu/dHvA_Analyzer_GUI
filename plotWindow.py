@@ -24,8 +24,8 @@ class plotWindow(wx.Window):
         self.decompLevel = 2
         self.waveletType = 'coif2'
         self.despikeOn = False
-        self.smoothOn= False
-        self.polyOn=False
+        self.smoothOn= True
+        self.polyOn= True
         self.smoothWinType = 'hamming'
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.x,self.InY)
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
@@ -47,6 +47,10 @@ class plotWindow(wx.Window):
         self.rawPlot.legend(['In Phase','Out Phase'],fontsize=10)
 
         #plot Polynomial BG
+
+        #sort the signals
+        self.sortedX, self.sortedSignal = dHvA_Util.sort_array(self.x, self.InY)
+
         if self.polyOn:
             self.PolyBG_Coeff = np.polyfit(self.sortedX,self.sortedSignal,self.polyOrder)
             self.PolyBG_Y = np.polyval(self.PolyBG_Coeff,self.sortedX)
@@ -96,6 +100,7 @@ class plotWindow(wx.Window):
         self.smoothPlot = self.figure.add_subplot(224)
         if len(self.smoothPlot.lines)>0:
             del self.smoothPlot.lines[0]
+            del self.smoothPlot.lines[0]
         #smooth and window the data
                     
 #        self.DeltaFreqY = 1/self.delta_inv_x 
@@ -109,19 +114,23 @@ class plotWindow(wx.Window):
 #        self.smoothPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue')
 #
         #invert the field
-        self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.sortedX,self.despikeY)
+        self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.despikeY,self.sortedX)
 
         if self.smoothOn:
             self.smoothY = dHvA_Util.smooth(self.interp_data,30,self.smoothWinType)
             window_func = eval('signal.'+self.smoothWinType)
             window_to_use = window_func(len(self.smoothY))
             self.windowed_dataY = window_to_use*self.smoothY
+            print self.smoothWinType
         else:
-            self.smoothY = self.interp_data
-            self.windowed_dataY = self.smoothY
+            pass
+            #self.smoothY = self.interp_data
+            #self.windowed_dataY = self.interp_data
         self.smoothPlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='green')
+        self.smoothPlot.plot(self.inv_x,self.smoothY,linewidth=2,color='red')
         self.smoothPlot.set_xlabel('1/B (1/T)')
         self.smoothPlot.set_title('Smooth and Windowing')
+        #self.smoothPlot.set_xlim([0.06,0.078])
         self.smoothPlot.relim()
         self.smoothPlot.autoscale(True)
         self.figure.tight_layout()

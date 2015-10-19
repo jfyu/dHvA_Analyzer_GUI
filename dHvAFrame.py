@@ -157,7 +157,7 @@ class dHvAFrame(wx.Frame):
         self.smoothFFT_winCtrl.SetValue('hamming')
 
         self.smoothButton = wx.CheckBox(self,-1,'ON')
-        self.smoothButton.SetValue(False)
+        self.smoothButton.SetValue(True)
  
         self.smoothFFT_sizer.Add(self.smoothButton,1,wx.EXPAND | wx.ALIGN_CENTER)
         self.smoothFFT_sizer.Add(wx.StaticText(self,-1,'Window Type'),0,wx.EXPAND|wx.ALIGN_CENTER)
@@ -294,7 +294,7 @@ class dHvAFrame(wx.Frame):
             #Find phase and find signal
             #self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.OutY)
             #sort the arrays so you can fit the polynomial background
-            self.plotWindow.sortedX, self.plotWindow.sortedSignal = dHvA_Util.sort_array(self.xdata, self.InYdata)
+            #self.plotWindow.sortedX, self.plotWindow.sortedSignal = dHvA_Util.sort_array(self.plotWindow.x, self.plotWindow.InY)
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOrder=[]
             for i in range(0,6):

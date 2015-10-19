@@ -2,6 +2,8 @@ import numpy as np
 from itertools import count,izip
 import pywt
 from scipy.interpolate import interp1d,InterpolatedUnivariateSpline
+from numpy import arange,array,average,diff,sqrt,take,argsort,sort,transpose,ones,add
+
 def sort_array(x_in,y_in):
     temp = [x_in,y_in]
     temp = zip(*temp)
@@ -118,28 +120,66 @@ def next_pow_2(N):
         i += 1
         two_to_the_i *= 2
     return i
+def Sum_i(f):
+    return add.reduce(f,0)
+def Sum_j(f):
+    return add.reduce(f,1)
+def window(N):
+    return arange(1,N+1,1)*arange(N,0,-1)
+def four_point(x,y,x0):
+        result = 0.0e+00
+        result += (x0 - x[1])*( x0 - x[2])*(x0 - x[3])/( (x[0] - x[1])*(x[0] - x[2])*(x[0] - x[3]))*y[0]
+        result += (x0 - x[0])*(x0 - x[2])*(x0 - x[3])/( (x[1] - x[0])*(x[1] - x[2])*(x[1] - x[3]))*y[1]
+        result += (x0 - x[0])*(x0 - x[1])*(x0 - x[3])/( (x[2] - x[0])*(x[2] - x[1])*(x[2] - x[3]))*y[2]
+        result += (x0 - x[0])*(x0 - x[1])*(x0 - x[2])/( (x[3] - x[0])*(x[3] - x[1])*(x[3] - x[2]))*y[3]
+        return result
 
-def inv_field(sortedField,signal):
-    #we have to interpolate for the x axis of FFT, which is 1/B and needs to be evenly spaced
-    inv_B = []#for the 1/B, x axis
-    interp_data = []#for the y axis, where one performs FFT
-    Pow_2 = next_pow_2( len(sortedField) )   #next_pow_2 is defined before
+def inv_field(x_i,B_i):
+    Pow_2 = next_pow_2( len(B_i) )   #next_pow_2 is defined at start of this file
     N = pow(2,Pow_2)
-    I_B_min = 1.0/max(sortedField)
-    I_B_max = 1.0/min(sortedField)
+    I_B_min = 1.0/max(B_i)
+    I_B_max = 1.0/min(B_i)
     Delta_I_B = (I_B_max - I_B_min)/N
-    i=0
-    while i<N:
-        inv_B.append(I_B_min+i*Delta_I_B) #create the inverse_B array
-        i+=1
-    f = InterpolatedUnivariateSpline(sortedField,signal,k=3)#build a function that extrapolates as well as interpolates so it doesn't go out of bounds for the new x. See doc for more information. Interpolation and extrapolation using cubic spline
-    interp_data=f(inv_B)
-    #try:
-    #    interp_data = interp1d(sortedField,inv_B,kind='cubic')#get interpolated data
-    #except ValueError:
-    #    print 'interpolation outside range. Extrapolation required'
-
-    return inv_B, interp_data, Delta_I_B
+    tmpX = []
+    tmpIB = []
+    tmpIB1 = sort(1.0/B_i)
+    next_inverse_field = I_B_min
+    current_index = 0
+    for i in range(0,N-1):
+        tmpIB.append( next_inverse_field )
+        while ( tmpIB[i] ) >= tmpIB1[current_index]:
+            current_index += 1 
+        if current_index < ( len(tmpIB1) ):
+            index = len(B_i)-1  - current_index
+            if (index <= 1) | (index >= len(B_i)-2):
+                tmpX.append(x_i[index] + (1.0/tmpIB[i] - B_i[index])*(x_i[index+1] - x_i[index] )/(B_i[index+1] - B_i[index] ) )
+            else:
+                tmpX.append(  four_point( B_i[index-1:index+3] , x_i[index-1:index+3] , 1.0/tmpIB[i] ))
+        next_inverse_field += Delta_I_B
+    IB_i = array(tmpIB)
+    Ix_i = array(tmpX)
+    return Ix_i, IB_i, Delta_I_B
+#def inv_field(sortedField,signal):
+#    #we have to interpolate for the x axis of FFT, which is 1/B and needs to be evenly spaced
+#    inv_B = []#for the 1/B, x axis
+#    interp_data = []#for the y axis, where one performs FFT
+#    Pow_2 = next_pow_2( len(sortedField) )   #next_pow_2 is defined before
+#    N = pow(2,Pow_2)
+#    I_B_min = 1.0/max(sortedField)
+#    I_B_max = 1.0/min(sortedField)
+#    Delta_I_B = (I_B_max - I_B_min)/N
+#    i=0
+#    while i<N:
+#        inv_B.append(I_B_min+i*Delta_I_B) #create the inverse_B array
+#        i+=1
+#    f = InterpolatedUnivariateSpline(sortedField,signal,k=3)#build a function that extrapolates as well as interpolates so it doesn't go out of bounds for the new x. See doc for more information. Interpolation and extrapolation using cubic spline
+#    interp_data=f(inv_B)
+#    #try:
+#    #    interp_data = interp1d(sortedField,inv_B,kind='cubic')#get interpolated data
+#    #except ValueError:
+#    #    print 'interpolation outside range. Extrapolation required'
+#
+#    return inv_B, interp_data, Delta_I_B
 
 
 def take_fft(y,power,delta_freq):

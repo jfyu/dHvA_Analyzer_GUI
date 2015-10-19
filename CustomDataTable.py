@@ -5,7 +5,7 @@ class CustomDataTable(gridlib.PyGridTableBase):
     def __init__(self, *args,**kwargs):
         gridlib.PyGridTableBase.__init__(self)
         #self.log = log
-        self.colLabels = ['Frequncy','Amplitude']
+        self.colLabels = ['Frequency','Amplitude']
         self.dataTypes = gridlib.GRID_VALUE_NUMBER
         self.data=[]
         #self.data =[[0,0],[0,0],[0,0],[0,0],[0,0]] 
