@@ -60,6 +60,13 @@ class dHvAFrame(wx.Frame):
         self.plotWindow = plotWindow(self)
         self.FFTPanel = FFTPanel(self)
 
+        #sizer for file
+        self.fileBox = wx.StaticBox(self,-1,'File Name')
+        self.fileBox_sizer = wx.StaticBoxSizer(self.fileBox,wx.VERTICAL)
+        
+        self.fileNameCtrl = wx.TextCtrl(self,-1,'None',style=wx.TE_READONLY)
+        self.fileBox_sizer.Add(self.fileNameCtrl,1,wx.EXPAND|wx.ALIGN_CENTER)
+
         #Sizers for the comboBoxes 
         self.comboBox_box = wx.StaticBox(self,-1,'Select Data Arrays')
         self.comboBox_bsizer = wx.StaticBoxSizer(self.comboBox_box, wx.VERTICAL)
@@ -72,7 +79,7 @@ class dHvAFrame(wx.Frame):
             tmp_text = wx.StaticText(self,-1,comboBox_text[i])
             #self.ComboBoxSizer.Add(self.Data_comboBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
             self.comboBox_bsizer.Add(tmp_text,0,wx.ALIGN_LEFT)
-            self.comboBox_bsizer.Add(self.Data_comboBox[i],1,wx.EXPAND | wx.ALIGN_CENTER)
+            self.comboBox_bsizer.Add(self.Data_comboBox[i],0,wx.EXPAND | wx.ALIGN_CENTER)
 
         #setup events
         self.Bind(wx.EVT_COMBOBOX, self.setXdata,self.Data_comboBox[0])
@@ -190,6 +197,7 @@ class dHvAFrame(wx.Frame):
 
         #set up nested control sizers
         self.ctrlSizer = wx.BoxSizer(wx.VERTICAL)
+        self.ctrlSizer.Add(self.fileBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.comboBox_bsizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.rangeBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.YChooseBox_sizer,0,wx.EXPAND,border=5)
@@ -229,6 +237,7 @@ class dHvAFrame(wx.Frame):
                 for ii in range(len(self.varnames)):
                     self.Data_comboBox[i].Append(self.varnames[ii])
         dlg.Destroy()
+        self.fileNameCtrl.SetValue(self.filename)
         if self.Data_comboBox[0].GetValue() != "":
             #In case you want combo box to stay the same while selecting a different file
             self.setXdata(self)

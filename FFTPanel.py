@@ -176,7 +176,9 @@ class FFTPanel(wx.Frame):
         self.FFTPlot.set_title('FFT')
         self.FFTPlot.grid(True)
         self.FFTPlot.relim()
-        self.FFTPlot.autoscale(True)
+        self.FFTPlot.set_xlim([0,20000])
+        #self.FFTPlot.set_ylim([0,0.5])
+        self.FFTPlot.autoscale(True,axis='y')
 
         #add cursor to select points
         self.cursor = Cursor(self.FFTPlot,color='black',linewidth=1)
