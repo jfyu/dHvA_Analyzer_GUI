@@ -1,3 +1,9 @@
+commit 8949319d07c595c5d111fed9baad5fe12465d9e4
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Mon Oct 19 17:00:51 2015 -0400
+
+    Set up dialog class plotDialog to allow easy change of axes limits in FFTPanel. Added grid to all plots. Added warning messages that describes the row append bug in the table. Added additional radio buttons to select In Phase Y or Out Phase Y for analysis
+
 commit 4a20f99f6c11c97d8119912a4aced91e9f46b2bf
 Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
 Date:   Mon Oct 19 14:03:03 2015 -0400
