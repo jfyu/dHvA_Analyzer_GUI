@@ -33,20 +33,21 @@ class CustomDataTable(gridlib.PyGridTableBase):
         except IndexError:
             return ''
     def SetValue(self, row, col, value):
-        def innerSetValue(row, col, value):
-            try:
-                self.data[row][col] = value
-            except IndexError:
-                # add a new row
-                self.data.append([''] * self.GetNumberCols())
-                innerSetValue(row, col, value)
-                # tell the grid we've added a row
-                msg = gridlib.GridTableMessage(self,            # The table
-                        gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it
-                        1                                       # how many
-                        )
-                self.GetView().ProcessTableMessage(msg)
-        innerSetValue(row, col, value)
+        #def innerSetValue(row, col, value):
+        #    try:
+        #        self.data[row][col] = value
+        #    except IndexError:
+        #        # add a new row
+        #        self.data.append([''] * self.GetNumberCols())
+        #        innerSetValue(row, col, value)
+        #        # tell the grid we've added a row
+        #        msg = gridlib.GridTableMessage(self,            # The table
+        #                gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it
+        #                1                                       # how many
+        #                )
+        #        self.GetView().ProcessTableMessage(msg)
+        #innerSetValue(row, col, value)
+        self.data[row][col]=value
 
     def AppendRow(self):
         # add a new row
@@ -56,6 +57,11 @@ class CustomDataTable(gridlib.PyGridTableBase):
                         gridlib.GRIDTABLE_NOTIFY_ROWS_APPENDED, # what we did to it
                         1                                       # how many
                         )
+        self.GetView().ProcessTableMessage(msg)
+        return len(self.data)
+    def DeleteRow(self):
+        self.data.pop()
+        msg = gridlib.GridTableMessage(self,gridlib.GRIDTABLE_NOTIFY_ROWS_DELETED,1)
         self.GetView().ProcessTableMessage(msg)
         return len(self.data)
     #--------------------------------------------------

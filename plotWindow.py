@@ -17,7 +17,7 @@ class plotWindow(wx.Window):
         self.figure=Figure()
         
         #starting variables
-        self.x = np.linspace(-10, 20,100)
+        self.x = np.linspace(0.1,20,183)
         self.InY = np.sin(self.x)
         self.OutY = np.cos(self.x)
         self.sortedX = self.x
@@ -31,6 +31,8 @@ class plotWindow(wx.Window):
         self.polyOn= True
         self.smoothWinType = 'hamming'
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.x,self.InY)
+        self.inYState = True
+        self.outYState = False
         
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
         
@@ -64,12 +66,16 @@ class plotWindow(wx.Window):
         self.rawPlot.autoscale(True)
         self.rawPlot.set_title('Raw data')
         self.rawPlot.set_xlabel('Field (T)')
-        self.rawPlot.legend(['In Phase','Out Phase'],fontsize=10,fancybox=True,framealpha=0.5)
+        self.rawPlot.legend(['In Phase','Out Phase'],fontsize=11,fancybox=True,framealpha=0.5)
+        self.rawPlot.grid(True)
 
         #plot Polynomial BG
 
         #sort the signals
-        self.sortedX, self.sortedSignal = dHvA_Util.sort_array(self.x, self.InY)
+        if self.inYState == True:
+            self.sortedX, self.sortedSignal = dHvA_Util.sort_array(self.x, self.InY)
+        if self.outYState == True:
+            self.sortedX,self.sortedSignal = dHvA_Util.sort_array(self.x,self.OutY)
 
         if self.polyOn:
             self.PolyBG_Coeff = np.polyfit(self.sortedX,self.sortedSignal,self.polyOrder)
@@ -92,16 +98,14 @@ class plotWindow(wx.Window):
         self.polyBGPlot.autoscale(True)
         self.polyBGPlot.set_title('Polynomial BG Removal')
         self.polyBGPlot.set_xlabel('Field (T)')
-        self.polyBGPlot.legend(['Raw','Poly BG','no BG'],fontsize=10,fancybox=True,framealpha=0.5)
-        #using datacursor makes the program load up really slow
-        #HighlightingDataCursor(self.polyBGPlot.lines) 
+        self.polyBGPlot.legend(['Raw','Poly BG','no BG'],fontsize=11,fancybox=True,framealpha=0.5)
+        self.polyBGPlot.grid(True)
 
         #plot despike
         self.despikePlot = self.figure.add_subplot(223)
         if len(self.despikePlot.lines)>0:
             del self.despikePlot.lines[0]
             del self.despikePlot.lines[0]
-        #    del self.despikePlot.lines[0]
         self.despikePlot.plot(self.sortedX,self.noBG_Y,linewidth=2,color='blue')
         if self.despikeOn:
             self.despikeY = dHvA_Util.wavelet_filter(self.noBG_Y,self.decompLevel,self.waveletType)
@@ -113,36 +117,34 @@ class plotWindow(wx.Window):
         self.despikePlot.autoscale(True)
         self.despikePlot.set_title('Despike')
         self.despikePlot.set_xlabel('Field (T)')
-        self.despikePlot.legend(['data','despiked'],fontsize=10,fancybox=True,framealpha=0.5) 
-        self.figure.tight_layout()
-
+        self.despikePlot.legend(['data','despiked'],fontsize=11,fancybox=True,framealpha=0.5) 
+        self.despikePlot.grid(True)
+        
         #plot Smooth
         self.smoothPlot = self.figure.add_subplot(224)
         if len(self.smoothPlot.lines)>0:
             del self.smoothPlot.lines[0]
-            #del self.smoothPlot.lines[0]
+            del self.smoothPlot.lines[0]
         
         #smooth and window the data
         #invert the field
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.despikeY,self.sortedX)
-        #self.inv_x,self.interp_data,self.delta_inv_x = dHvA_Util.inv_field(self.sortedX,self.despikeY)
         if self.smoothOn:
             self.smoothY = dHvA_Util.smooth(self.interp_data,30,self.smoothWinType)
             window_func = eval('signal.'+self.smoothWinType)
             window_to_use = window_func(len(self.smoothY))
             self.windowed_dataY = window_to_use*self.smoothY
-            print self.smoothWinType
         else:
-            pass
-            #self.smoothY = self.interp_data
-            #self.windowed_dataY = self.interp_data
-        self.smoothPlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='green')
-        #self.smoothPlot.plot(self.inv_x,self.smoothY,linewidth=2,color='red')
+            self.smoothY = self.interp_data
+            self.windowed_dataY = self.interp_data
+        self.smoothPlot.plot(self.inv_x,self.smoothY,linewidth=2,color='blue')
+        self.smoothPlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='red')
         self.smoothPlot.set_xlabel('1/B (1/T)')
         self.smoothPlot.set_title('Smooth and Windowing')
-        #self.smoothPlot.set_xlim([0.06,0.078])
+        self.smoothPlot.legend(['smoothed','windowed'],fontsize=11,fancybox=True,framealpha=0.5)
         self.smoothPlot.relim()
         self.smoothPlot.autoscale(True)
+        self.smoothPlot.grid(True)
         self.figure.tight_layout()
     def repaint(self):
         self.canvas.draw()

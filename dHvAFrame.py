@@ -78,7 +78,17 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_COMBOBOX, self.setXdata,self.Data_comboBox[0])
         self.Bind(wx.EVT_COMBOBOX, self.setInYdata,self.Data_comboBox[1])
         self.Bind(wx.EVT_COMBOBOX, self.setOutYdata,self.Data_comboBox[2])
+
+        #Choose in or out of phase Y
+        self.YChooseBox = wx.StaticBox(self,-1,'Choose Data to Analyze')
+        self.YChooseBox_sizer = wx.StaticBoxSizer(self.YChooseBox,wx.HORIZONTAL)
+
+        self.inYRadioButton = wx.RadioButton(self,-1,'In Phase Y',style=wx.RB_GROUP)
+        self.outYRadioButton = wx.RadioButton(self,-1,'Out Phase Y')
         
+        self.YChooseBox_sizer.Add(self.inYRadioButton,wx.ALIGN_LEFT)
+        self.YChooseBox_sizer.Add(self.outYRadioButton,wx.ALIGN_LEFT)
+
         #set up controls 
 
         #min and max plot range
@@ -108,7 +118,9 @@ class dHvAFrame(wx.Frame):
 
         self.polyOrder_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.polyOrderRadioButton=[]
-        for i in range(0,6):
+        self.polyOrderRadioButton.append(wx.RadioButton(self,-1,str(1),style=wx.RB_GROUP)) #new group of radio buttons
+        self.polyOrder_sizer.Add(self.polyOrderRadioButton[0],1,wx.EXPAND|wx.ALIGN_CENTER)
+        for i in range(1,6):
             self.polyOrderRadioButton.append(wx.RadioButton(self,-1,str(i+1)))
             self.polyOrder_sizer.Add(self.polyOrderRadioButton[i],1,wx.EXPAND | wx.ALIGN_CENTER)
         #for j in range(0,3):
@@ -180,6 +192,7 @@ class dHvAFrame(wx.Frame):
         self.ctrlSizer = wx.BoxSizer(wx.VERTICAL)
         self.ctrlSizer.Add(self.comboBox_bsizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.rangeBox_sizer,0,wx.EXPAND,border=5)
+        self.ctrlSizer.Add(self.YChooseBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.polyBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.despikeBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.smoothFFTBox_sizer,0,wx.EXPAND,border=5)
@@ -293,8 +306,10 @@ class dHvAFrame(wx.Frame):
                 warningDlg.Destroy()
             #Find phase and find signal
             #self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.OutY)
-            #sort the arrays so you can fit the polynomial background
-            #self.plotWindow.sortedX, self.plotWindow.sortedSignal = dHvA_Util.sort_array(self.plotWindow.x, self.plotWindow.InY)
+        if self.inYRadioButton.GetValue() == True:
+            self.plotWindow.inYState = True
+        if self.outYRadioButton.GetValue() == True:
+            self.plotWindow.outYState=True
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOrder=[]
             for i in range(0,6):

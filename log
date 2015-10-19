@@ -1,0 +1,143 @@
+commit 4a20f99f6c11c97d8119912a4aced91e9f46b2bf
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Mon Oct 19 14:03:03 2015 -0400
+
+    Added toolbar and allowed plots to stretch if the size of the frames are increase (i.e. added a sizer to each canvas and allowed it to change in proportion)
+
+commit 4c125d3a36cb3863840d814c3b444237f4bdf8cb
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Mon Oct 19 12:59:06 2015 -0400
+
+    Checked results against Aaron's program using real data. Works! Changed the inv_field method to use Stephen's four point method. The reason why it didn't work before was because the arguments to inv_field was reversed, should be (data, field)
+
+commit bcaf1f2e3095815091668738dc06ed55d5984c67
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 18 16:10:00 2015 -0400
+
+    Set up the grid to display all the clicked values. Set up save function. Still a bit off if I clear a value in the grid and then click again. Needs work
+
+commit a29bd8d90a2616f2516a0dad635ab08ca4854407
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 18 13:49:56 2015 -0400
+
+    extra plot window now combined to the single FFTPanel.py file, and added navigation tools so we can now pan and save. Also added mouse event but that is currently interfering with the pan in navigation, it also picks up mouse coordiantes regardless if it is on the line
+
+commit 783c8097d87e1c5b4ca361672d544fce0aa0a3fd
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 18 11:53:16 2015 -0400
+
+    Added an extra window to open the FFT plot
+
+commit 95bf9ce51ef9e763d8440bebcc9a3ec3025e3a97
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 18 10:37:52 2015 -0400
+
+    Plots FFT and smoothes. However the smoothed function has 1/B as x-axis and despiked has B as axis, so cannot plot the two on the same plot (currently the case). Needs to figure out a way to have a dialog that plots FFT and shows the peaks, and write them to file
+
+commit e566eb8643faf6f2b93e8b9f4072f950cf46bc13
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Fri Oct 16 17:07:27 2015 -0400
+
+    Wrote a new inv_field function in dHvA_Util that will interpolate and extrapolate for new 1/B values to match the FFT
+
+commit a4a4d03cbb84080aecf7c4c925996d5fc07fddb1
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Thu Oct 15 16:42:16 2015 -0400
+
+    Updated the file open dialog so that if I have selected the data before (i.e. the combo boxes are not empty), then I will upate the xdata and ydata arrays so I don't have select the same data array again (i.e. reselect anything from one of the combo boxes). The wavelet filter seem to add 1 more element when reconstructing, and seem to only happen to certain data sets. Not sure why
+
+commit 8c24913c10d3f1157167427e536d7e6433fd7fd2
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Thu Oct 15 15:53:40 2015 -0400
+
+    Plots despiked data. However, it appears that wavelet filter returns an array with length longer than the original x array for actual data. Aaron did not plot this, it needs to be addressed
+
+commit e9feb5ebb4352247a2b5a9be5899fd96d6b16696
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 11 18:12:13 2015 -0400
+
+    plot polynomial BG fit and subtracts. The data range error box still need work (i.e. if the data starts at 4T, selecting 0-4T does not return error). Set up the data selection so that if no file is opened, a file open dialog will appear.
+
+commit 9951afb1393604cb01149c84bb03cc69c3fb9213
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Thu Oct 8 15:38:19 2015 -0400
+
+    added some plot commands to plot the polynomial background in plotWindow.py. Cannot be used yet, unfinished
+
+commit d9a3fee0564c014f9b9fd326a002b8f2ca828f53
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Thu Oct 8 15:26:12 2015 -0400
+
+    used sort and find_angle
+
+commit a456d3de837d5de2c87da4243867ab6f57708a33
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Thu Oct 8 15:02:35 2015 -0400
+
+    Added error dialog if there is no data in selected range
+
+commit 9c7b5a003e83bc0578a4e129c0a9a7a2727e25eb
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Tue Oct 6 15:52:53 2015 -0400
+
+    added dHvA_Util to store all the utility subroutines, also set it up so that the first plut displays the raw data correctly
+
+commit a26833c2c5d00724e7341d4f14eb790c7e3cc3d7
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Mon Oct 5 17:00:35 2015 -0400
+
+    added spike removal and smooth controls
+
+commit da94e8a6af9e84021b8c96c9b80823264677b20a
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Mon Oct 5 13:30:22 2015 -0400
+
+    data input now passes to the plots and can be plotted
+
+commit f90024e3dd02af5312d07e77712ffed710dcbf30
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Mon Oct 5 11:57:17 2015 -0400
+
+    changed plotWindow into a separate file
+
+commit cc667fbe849798873d39228d8b5d59b9c69c26c2
+Author: Jing Fei Yu <jfeiyu@physics.utoronto.ca>
+Date:   Mon Oct 5 11:23:58 2015 -0400
+
+    Tested cases where the polynomial will change up on pressing apply button. Also removes the preivous plot when repainting
+
+commit f9348e75feec0c6e87a9be45964a0457b622f0cb
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 4 21:40:43 2015 -0400
+
+    added apply button so all controls will only apply when that is pressed. Also included check buttons for polynomial background subtraction
+
+commit 07f9c2e18b9fb175cd63133ef5a9fd564d35dbaf
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 4 19:39:10 2015 -0400
+
+    The control for min/max implemented, but it seems that the plot is not overwriting itself but just adding more x and y data (i.e. the colour changes)
+
+commit fee28f7e171abfefbe5a989fe0573797f1ef52ac
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 4 18:51:48 2015 -0400
+
+    Added spin controls to set min and max range of interest. Did not implement the event yet
+
+commit d6548d331944ea85b0dea346e33984c70ad172e7
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 4 17:44:26 2015 -0400
+
+    Added box around the combo boxes and added text to indicate the combo box field
+
+commit 888d5d02586003f2bbb27a14ec4189290757a988
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 4 17:23:28 2015 -0400
+
+    created combo boxes that updates its selection options if an nc file is opened. Also included plot window with 4 subplots
+
+commit c43ae8e8f43ce38f728844ee39fdd6bb41d71508
+Author: Jennifer Yu <jfeiyu@physics.utoronto.ca>
+Date:   Sun Oct 4 15:21:40 2015 -0400
+
+    made combo box

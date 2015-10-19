@@ -11,6 +11,7 @@ import dHvA_Util
 from CustomDataTable import *
 import os
 import csv
+from PlotDialog import *
 
 class FFTPanel(wx.Frame):
     def __init__(self, *args, **kwargs):
@@ -26,16 +27,20 @@ class FFTPanel(wx.Frame):
         menuSave = filemenu.Append(wx.ID_OPEN,"OPEN","Open a data file")
         menuExit = filemenu.Append(wx.ID_EXIT, "EXIT", "Terminate the Program")
 
+        plotmenu=wx.Menu()
+        menuLim = plotmenu.Append(wx.NewId(),'Set Axes Limit','sets axes limit')
+
         #Creating the menu bar and status bar
         menuBar = wx.MenuBar()
         menuBar.Append(filemenu,"File")
+        menuBar.Append(plotmenu,'Plot')
         self.SetMenuBar(menuBar)
-        self.CreateStatusBar()
+        #self.CreateStatusBar()
         
         #Events for menu
         self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
         self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
-
+        self.Bind(wx.EVT_MENU, self.ChangeLimit,menuLim)
 
         #Events on toolbar
         tb.AddLabelTool(10,'Save',save_bmp)
@@ -44,7 +49,7 @@ class FFTPanel(wx.Frame):
 
         #do all the figure plotting things. Reason why we don't do that in a separate class is because the navigation tool bar doesn't like to work
         self.figure=Figure()
-        self.x = np.linspace(-10, 20,100)
+        self.x = np.linspace(0.1, 20,183)
         self.Y = np.sin(self.x)
         self.delta_inv_x = 30/100.0
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
@@ -70,19 +75,26 @@ class FFTPanel(wx.Frame):
 
         #add the grid to display the peaks 
 
-        #self.tableSizer = wx.BoxSizer(wx.VERTICAL)
+        self.tableSizer = wx.BoxSizer(wx.VERTICAL)
         self.DataTable = CustTableGrid(self)#initially two columns and two rows
         #self.row = 0 #keep track of how many peaks added
         #save button
-        #self.saveButton =wx.Button(self,-1,'Save Data')
-        #self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
+        self.saveButton =wx.Button(self,-1,'Save Data')
+        self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
 
-        #self.tableSizer.Add(self.saveButton,0,wx.EXPAND)
-        #self.tableSizer.Add(self.DataTable,0,wx.EXPAND)
+        self.ChangeButton = wx.Button(self,-1,'Change Axes Limits')
+        self.Bind(wx.EVT_BUTTON,self.ChangeLimit,self.ChangeButton)
+        
+        self.warningText = wx.StaticText(self, -1,'Warning: If you delete any selections in this table, and then continue to select more peaks, you will result in one more empty row. If you delete two selections, you will end up with two empty rows, and so on')
+        self.warningText.Wrap(200)
+        self.tableSizer.Add(self.ChangeButton,0,wx.EXPAND)
+        self.tableSizer.Add(self.saveButton,0,wx.EXPAND)
+        self.tableSizer.Add(self.warningText,0,wx.EXPAND)
+        self.tableSizer.Add(self.DataTable,1,wx.EXPAND)
 
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.sizer.Add(self.CanvasSizer,1,wx.EXPAND)
-        self.sizer.Add(self.DataTable,0,wx.EXPAND)
+        self.sizer.Add(self.tableSizer,0,wx.EXPAND)
         self.SetSizer(self.sizer)     
         self.SetAutoLayout(1)
         self.sizer.Fit(self)
@@ -104,10 +116,11 @@ class FFTPanel(wx.Frame):
         # pad_wind_data = np.append(zero_matrix, pad_wind_data)
 
         self.FreqY, self.FFT_SignalY = dHvA_Util.take_fft(self.pad_wind_dataY, 20, self.DeltaFreqY)
-        self.FFTPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue',picker=1)
-        self.FFTPlot.set_xlabel('dHvA Frequency (1/T)')
+        self.FFTPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue',picker=10)
+        self.FFTPlot.set_xlabel('dHvA Frequency (T)')
         self.FFTPlot.set_ylabel('Amplitude (a.u.)')
         self.FFTPlot.set_title('FFT')
+        self.FFTPlot.grid(True)
         self.FFTPlot.relim()
         self.FFTPlot.autoscale(True)
 
@@ -124,18 +137,33 @@ class FFTPanel(wx.Frame):
         picked_y = e.artist.get_ydata()[e.ind[0]]
         print picked_x, picked_y
         self.row = self.DataTable.table.GetNumberRows()
-        for i in range(0,self.row):
-            if self.DataTable.table.IsEmptyCell(i,0)==True:
-                self.row = i
-                break
-        
+        self.DataTable.table.AppendRow()
+        if self.row != 0:
+            for i in range(0,self.row):
+                if self.DataTable.table.IsEmptyCell(i,0)==True:
+                    self.row = i
+                    break
         self.DataTable.table.SetValue(self.row,0,picked_x)
         self.DataTable.table.SetValue(self.row,1,picked_y)
-        #self.row=self.DataTable.table.AppendRow()
-        print self.row
-        #self.row=self.row+1
-        #print e.ind
-        #print zip(e.artist.get_xdata()[e.ind],e.artist.get_ydata()[e.ind])
+        #print self.row
+        #print self.DataTable.table.AppendRow()
+        #print self.DataTable.table.DeleteRow()
+    
+    
+    def ChangeLimit(self,e):
+        dlg = PlotDialog(self,-1,'Change x-axis limits',style=wx.DEFAULT_DIALOG_STYLE)
+        dlg.CenterOnScreen()
+        val=dlg.ShowModal()
+        if val == wx.ID_OK:
+            print dlg.xlim[0]
+            print dlg.xlim[1]
+            print dlg.ylim[0]
+            print dlg.ylim[1]
+            self.FFTPlot.set_xlim(dlg.xlim)
+            self.FFTPlot.set_ylim(dlg.ylim)
+            #self.FFTPlot.autoscale(True,axis='y')
+            #self.FFTPlot.set_xlim([0,20000])
+        dlg.Destroy()
 
     def OnSave(self,e):
         dlg = wx.FileDialog(
@@ -156,3 +184,4 @@ class FFTPanel(wx.Frame):
 
     def OnClose(self,e):
         self.Show(False) #same as OnExit
+
