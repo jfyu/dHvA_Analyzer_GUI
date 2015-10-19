@@ -36,7 +36,7 @@ class dHvAFrame(wx.Frame):
         menuBar = wx.MenuBar()
         menuBar.Append(filemenu,"File")
         self.SetMenuBar(menuBar)
-        self.CreateStatusBar()
+        #self.CreateStatusBar()
         
         #Events for menu
         self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
@@ -187,7 +187,7 @@ class dHvAFrame(wx.Frame):
        
        #set up final sizers
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.plotWindow,0,wx.EXPAND)
+        self.sizer.Add(self.plotWindow,1,wx.GROW)
         self.sizer.Add(self.ctrlSizer,0,wx.EXPAND,border=5)
 
         #Layout sizers

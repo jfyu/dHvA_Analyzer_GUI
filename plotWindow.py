@@ -4,9 +4,10 @@ import numpy as np
 import matplotlib
 matplotlib.use('WXAgg')
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg
-from matplotlib.pyplot import gcf, setp
+from matplotlib.backends.backend_wx import NavigationToolbar2Wx
+#from matplotlib.pyplot import gcf, setp
 from matplotlib.figure import Figure
-from mpldatacursor import datacursor,HighlightingDataCursor
+#from mpldatacursor import datacursor,HighlightingDataCursor
 import dHvA_Util
 from scipy import signal
 
@@ -14,6 +15,8 @@ class plotWindow(wx.Window):
     def __init__(self, *args, **kwargs):
         wx.Window.__init__(self,*args,**kwargs)
         self.figure=Figure()
+        
+        #starting variables
         self.x = np.linspace(-10, 20,100)
         self.InY = np.sin(self.x)
         self.OutY = np.cos(self.x)
@@ -28,7 +31,24 @@ class plotWindow(wx.Window):
         self.polyOn= True
         self.smoothWinType = 'hamming'
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.x,self.InY)
+        
         self.canvas = FigureCanvasWxAgg(self, -1, self.figure)
+        
+        #toolbar
+        self.toolbar = NavigationToolbar2Wx(self.canvas)
+        self.toolbar.Realize()
+        tw, th = self.toolbar.GetSizeTuple()
+        fw, fh = self.canvas.GetSizeTuple()
+        self.toolbar.SetSize(wx.Size(fw, th))
+        self.toolbar.update()
+        self.toolbar.Show()
+
+        #sizers
+        self.sizer = wx.BoxSizer(wx.VERTICAL)
+        self.sizer.Add(self.canvas,1,wx.EXPAND)
+        self.sizer.Add(self.toolbar,0,wx.GROW)
+        self.SetSizer(self.sizer)
+        self.sizer.Fit(self)
         self.draw()
     
     def draw(self):
@@ -44,7 +64,7 @@ class plotWindow(wx.Window):
         self.rawPlot.autoscale(True)
         self.rawPlot.set_title('Raw data')
         self.rawPlot.set_xlabel('Field (T)')
-        self.rawPlot.legend(['In Phase','Out Phase'],fontsize=10)
+        self.rawPlot.legend(['In Phase','Out Phase'],fontsize=10,fancybox=True,framealpha=0.5)
 
         #plot Polynomial BG
 
@@ -72,7 +92,7 @@ class plotWindow(wx.Window):
         self.polyBGPlot.autoscale(True)
         self.polyBGPlot.set_title('Polynomial BG Removal')
         self.polyBGPlot.set_xlabel('Field (T)')
-        self.polyBGPlot.legend(['Raw','Poly BG','no BG'],fontsize=10)
+        self.polyBGPlot.legend(['Raw','Poly BG','no BG'],fontsize=10,fancybox=True,framealpha=0.5)
         #using datacursor makes the program load up really slow
         #HighlightingDataCursor(self.polyBGPlot.lines) 
 
@@ -93,29 +113,19 @@ class plotWindow(wx.Window):
         self.despikePlot.autoscale(True)
         self.despikePlot.set_title('Despike')
         self.despikePlot.set_xlabel('Field (T)')
-        self.despikePlot.legend(['data','despiked'],fontsize=10) 
+        self.despikePlot.legend(['data','despiked'],fontsize=10,fancybox=True,framealpha=0.5) 
         self.figure.tight_layout()
 
         #plot Smooth
         self.smoothPlot = self.figure.add_subplot(224)
         if len(self.smoothPlot.lines)>0:
             del self.smoothPlot.lines[0]
-            del self.smoothPlot.lines[0]
+            #del self.smoothPlot.lines[0]
+        
         #smooth and window the data
-                    
-#        self.DeltaFreqY = 1/self.delta_inv_x 
-#        #padd the data
-#        pad_mult = 10
-#        zero_matrixY = np.zeros(len(self.windowed_dataY)*pad_mult/2)
-#        self.pad_wind_dataY = np.append(self.windowed_dataY, zero_matrixY)
-#        # pad_wind_data = np.append(zero_matrix, pad_wind_data)
-#
-#        self.FreqY, self.FFT_SignalY = dHvA_Util.take_fft(self.pad_wind_dataY, 20, self.DeltaFreqY)
-#        self.smoothPlot.plot(self.FreqY,self.FFT_SignalY,linewidth=2,color='blue')
-#
         #invert the field
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.despikeY,self.sortedX)
-
+        #self.inv_x,self.interp_data,self.delta_inv_x = dHvA_Util.inv_field(self.sortedX,self.despikeY)
         if self.smoothOn:
             self.smoothY = dHvA_Util.smooth(self.interp_data,30,self.smoothWinType)
             window_func = eval('signal.'+self.smoothWinType)
@@ -127,7 +137,7 @@ class plotWindow(wx.Window):
             #self.smoothY = self.interp_data
             #self.windowed_dataY = self.interp_data
         self.smoothPlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='green')
-        self.smoothPlot.plot(self.inv_x,self.smoothY,linewidth=2,color='red')
+        #self.smoothPlot.plot(self.inv_x,self.smoothY,linewidth=2,color='red')
         self.smoothPlot.set_xlabel('1/B (1/T)')
         self.smoothPlot.set_title('Smooth and Windowing')
         #self.smoothPlot.set_xlim([0.06,0.078])

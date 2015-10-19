@@ -59,10 +59,13 @@ class FFTPanel(wx.Frame):
         self.toolbar.SetSize(wx.Size(fw, th))
         self.toolbar.update()
         self.toolbar.Show()
+        
+        #Set x an y limits
+
         #sizers
         self.CanvasSizer = wx.BoxSizer(wx.VERTICAL)
-        self.CanvasSizer.Add(self.canvas,0,wx.EXPAND)
-        self.CanvasSizer.Add(self.toolbar,0,wx.LEFT|wx.EXPAND)
+        self.CanvasSizer.Add(self.canvas,1,wx.EXPAND)
+        self.CanvasSizer.Add(self.toolbar,0,wx.GROW)
 
 
         #add the grid to display the peaks 
@@ -78,7 +81,7 @@ class FFTPanel(wx.Frame):
         #self.tableSizer.Add(self.DataTable,0,wx.EXPAND)
 
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.sizer.Add(self.CanvasSizer,0,wx.EXPAND)
+        self.sizer.Add(self.CanvasSizer,1,wx.EXPAND)
         self.sizer.Add(self.DataTable,0,wx.EXPAND)
         self.SetSizer(self.sizer)     
         self.SetAutoLayout(1)
@@ -86,7 +89,8 @@ class FFTPanel(wx.Frame):
         
         self.Centre()
         self.Show()
-    
+        self.Bind(wx.EVT_CLOSE, self.OnClose)
+
     def draw(self):
         self.FFTPlot = self.figure.add_subplot(111)
         if len(self.FFTPlot.lines)>0:
@@ -147,6 +151,8 @@ class FFTPanel(wx.Frame):
         dlg.Destroy()
     
     def OnExit(self,e):
-        self.Close(True)  # Close the frame.
+        #self.Close(True)  # Close the frame.
+        self.Show(False) #just hides it, so we can show it again if desired
 
-        
+    def OnClose(self,e):
+        self.Show(False) #same as OnExit
