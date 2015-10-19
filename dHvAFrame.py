@@ -160,7 +160,7 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
 
         #Smooth, Interpolate and FFT controls
-        self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth and Windowing, default OFF')
+        self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth and Windowing (default OFF)')
         self.smoothFFTBox_sizer = wx.StaticBoxSizer(self.smoothFFTBox,wx.VERTICAL)
 
         self.smoothFFT_sizer = wx.BoxSizer(wx.VERTICAL)

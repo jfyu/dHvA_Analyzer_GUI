@@ -27,20 +27,20 @@ class FFTPanel(wx.Frame):
         menuSave = filemenu.Append(wx.ID_OPEN,"OPEN","Open a data file")
         menuExit = filemenu.Append(wx.ID_EXIT, "EXIT", "Terminate the Program")
 
-        plotmenu=wx.Menu()
-        menuLim = plotmenu.Append(wx.NewId(),'Set Axes Limit','sets axes limit')
+        #plotmenu=wx.Menu()
+        #menuLim = plotmenu.Append(wx.NewId(),'Set Axes Limit','sets axes limit')
 
         #Creating the menu bar and status bar
         menuBar = wx.MenuBar()
         menuBar.Append(filemenu,"File")
-        menuBar.Append(plotmenu,'Plot')
+        #menuBar.Append(plotmenu,'Plot')
         self.SetMenuBar(menuBar)
         #self.CreateStatusBar()
         
         #Events for menu
         self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
         self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
-        self.Bind(wx.EVT_MENU, self.ChangeLimit,menuLim)
+        #self.Bind(wx.EVT_MENU, self.ChangeLimit,menuLim)
 
         #Events on toolbar
         tb.AddLabelTool(10,'Save',save_bmp)
@@ -82,16 +82,67 @@ class FFTPanel(wx.Frame):
         self.saveButton =wx.Button(self,-1,'Save Data')
         self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
 
+        #Change Size Controls`
+        LimitBox = wx.StaticBox(self,-1,"Change x-axis Limits")
+        LimitBoxSizer = wx.StaticBoxSizer(LimitBox,wx.VERTICAL)
+
+        xbox = wx.BoxSizer(wx.VERTICAL)
+        xLowLimLabel = wx.StaticText(self,-1,"x lower limit")
+        xHighLimLabel = wx.StaticText(self,-1,"x upper limit")
+        xbox.Add(xLowLimLabel,0,wx.ALIGN_CENTRE|wx.ALL)
+        xbox.Add(xHighLimLabel,0,wx.ALIGN_CENTRE|wx.ALL)
+
+        #sizer.Add(box,0,wx.ALIGN_CENTRE|wx.ALL,5)
+
+        xControlBox = wx.BoxSizer(wx.VERTICAL)
+        self.xLowLimCtrl = wx.SpinCtrlDouble(self,value='0.00',min=0.00,max=1e10,inc=1)
+        self.xHighLimCtrl = wx.SpinCtrlDouble(self,value='20000',min=0.00,max=1e10,inc=1)
+        xControlBox.Add(self.xLowLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
+        xControlBox.Add(self.xHighLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
+
+        self.Bind(wx.EVT_SPINCTRLDOUBLE,self.setxLowLim,self.xLowLimCtrl)
+        self.Bind(wx.EVT_SPINCTRLDOUBLE,self.setxHighLim,self.xHighLimCtrl)
+ 
+        XallBox = wx.BoxSizer(wx.HORIZONTAL)
+        XallBox.Add(xbox,0,wx.ALIGN_CENTRE|wx.ALL,5)
+        XallBox.Add(xControlBox,0,wx.ALIGN_CENTRE|wx.ALL,5)
+        
+        ybox = wx.BoxSizer(wx.VERTICAL)
+        yLowLimLabel = wx.StaticText(self,-1,"y lower limit")
+        yHighLimLabel = wx.StaticText(self,-1,"y upper limit")
+        ybox.Add(yLowLimLabel,0,wx.ALIGN_CENTRE|wx.ALL)
+        ybox.Add(yHighLimLabel,0,wx.ALIGN_CENTRE|wx.ALL)
+
+        yControlBox = wx.BoxSizer(wx.VERTICAL)
+        self.yLowLimCtrl = wx.SpinCtrlDouble(self,value='0.00',min=0.00,max=1e10,inc=0.1)
+        self.yHighLimCtrl = wx.SpinCtrlDouble(self,value='10',min=0.00,max=1e10,inc=0.1)
+        yControlBox.Add(self.yLowLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
+        yControlBox.Add(self.yHighLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
+
+        self.Bind(wx.EVT_SPINCTRLDOUBLE,self.setyLowLim,self.yLowLimCtrl)
+        self.Bind(wx.EVT_SPINCTRLDOUBLE,self.setyHighLim,self.yHighLimCtrl)
+ 
+        YallBox = wx.BoxSizer(wx.HORIZONTAL)
+        YallBox.Add(ybox,0,wx.ALIGN_CENTRE|wx.ALL,5)
+        YallBox.Add(yControlBox,0,wx.ALIGN_CENTRE|wx.ALL,5)
+ 
+        LimitBoxSizer.Add(XallBox,0,wx.ALIGN_CENTRE|wx.ALL,5)
+        LimitBoxSizer.Add(YallBox,0,wx.ALIGN_CENTRE|wx.ALL,5)
+
         self.ChangeButton = wx.Button(self,-1,'Change Axes Limits')
         self.Bind(wx.EVT_BUTTON,self.ChangeLimit,self.ChangeButton)
-        
-        self.warningText = wx.StaticText(self, -1,'Warning: If you delete any selections in this table, and then continue to select more peaks, you will result in one more empty row. If you delete two selections, you will end up with two empty rows, and so on')
-        self.warningText.Wrap(200)
-        self.tableSizer.Add(self.ChangeButton,0,wx.EXPAND)
-        self.tableSizer.Add(self.saveButton,0,wx.EXPAND)
-        self.tableSizer.Add(self.warningText,0,wx.EXPAND)
-        self.tableSizer.Add(self.DataTable,1,wx.EXPAND)
 
+        LimitBoxSizer.Add(self.ChangeButton,0,wx.ALIGN_CENTRE|wx.ALL,5)
+        
+        #self.warningText = wx.StaticText(self, -1,'Warning: If you delete any selections in this table, and then continue to select more peaks, you will result in one more empty row. If you delete two selections, you will end up with two empty rows, and so on')
+        #self.warningText.Wrap(200)
+        #self.tableSizer.Add(self.ChangeButton,0,wx.EXPAND)
+        
+        self.tableSizer.Add(LimitBoxSizer,0,wx.EXPAND)
+        #self.tableSizer.Add(self.warningText,0,wx.EXPAND)
+        self.tableSizer.Add(self.DataTable,1,wx.EXPAND)
+        self.tableSizer.Add(self.saveButton,0,wx.EXPAND)
+        
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.sizer.Add(self.CanvasSizer,1,wx.EXPAND)
         self.sizer.Add(self.tableSizer,0,wx.EXPAND)
@@ -103,6 +154,9 @@ class FFTPanel(wx.Frame):
         self.Show()
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
+        self.xlim=[0,20000]
+        self.ylim=[0,1]
+    
     def draw(self):
         self.FFTPlot = self.figure.add_subplot(111)
         if len(self.FFTPlot.lines)>0:
@@ -151,20 +205,20 @@ class FFTPanel(wx.Frame):
     
     
     def ChangeLimit(self,e):
-        dlg = PlotDialog(self,-1,'Change x-axis limits',style=wx.DEFAULT_DIALOG_STYLE)
-        dlg.CenterOnScreen()
-        val=dlg.ShowModal()
-        if val == wx.ID_OK:
-            print dlg.xlim[0]
-            print dlg.xlim[1]
-            print dlg.ylim[0]
-            print dlg.ylim[1]
-            self.FFTPlot.set_xlim(dlg.xlim)
-            self.FFTPlot.set_ylim(dlg.ylim)
-            #self.FFTPlot.autoscale(True,axis='y')
-            #self.FFTPlot.set_xlim([0,20000])
-        dlg.Destroy()
-
+        #dlg = PlotDialog(self,-1,'Change x-axis limits',style=wx.DEFAULT_DIALOG_STYLE)
+        #dlg.CenterOnScreen()
+        #val=dlg.ShowModal()
+        #if val == wx.ID_OK:
+        #    print dlg.xlim[0]
+        #    print dlg.xlim[1]
+        #    print dlg.ylim[0]
+        #    print dlg.ylim[1]
+        print self.xlim
+        print self.ylim
+        self.FFTPlot.set_xlim(self.xlim)
+        self.FFTPlot.set_ylim(self.ylim)
+        #    #self.FFTPlot.autoscale(True,axis='y')
+        #    #self.FFTPlot.set_xlim([0,20000])
     def OnSave(self,e):
         dlg = wx.FileDialog(
             self, message="Save file as ...", defaultDir=os.getcwd(), 
@@ -184,4 +238,15 @@ class FFTPanel(wx.Frame):
 
     def OnClose(self,e):
         self.Show(False) #same as OnExit
+    
+    def setxLowLim(self,e):
+        self.xlim[0] = self.xLowLimCtrl.GetValue()
 
+    def setxHighLim(self,e):
+        self.xlim[1] = self.xHighLimCtrl.GetValue()
+
+    def setyLowLim(self,e):
+        self.ylim[0]=self.yLowLimCtrl.GetValue()
+
+    def setyHighLim(self,e):
+        self.ylim[1] = self.yHighLimCtrl.GetValue()
