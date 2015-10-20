@@ -19,9 +19,12 @@ def select_data(x, inY, outY, xmin, xmax):
     temp_outY = []
     for i in range(0,len(x)):
         if (x[i]) > xmin and (x[i]) < xmax:
-            temp_field = np.append(temp_field,x[i])
-            temp_inY = np.append(temp_inY,inY[i])
-            temp_outY = np.append(temp_outY,outY[i])
+            temp_field.append(x[i])
+            temp_inY.append(inY[i])
+            temp_outY.append(outY[i])
+            #temp_field = np.append(temp_field,x[i])
+            #temp_inY = np.append(temp_inY,inY[i])
+            #temp_outY = np.append(temp_outY,outY[i])
     try: 
         temp_field[1] #in case the selected range isn't really in the data range
     except IndexError:

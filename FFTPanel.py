@@ -9,22 +9,22 @@ from matplotlib.figure import Figure
 from matplotlib.widgets import Cursor
 import dHvA_Util
 from CustomDataTable import *
-import os
+#import os
 import csv
-from PlotDialog import *
+#from PlotDialog import *
 
 class FFTPanel(wx.Frame):
     def __init__(self, *args, **kwargs):
         wx.Frame.__init__(self,*args,**kwargs)
         #Toolbar
-        tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
-        tsize = (24,24)
-        save_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR,tsize)
-        tb.SetToolBitmapSize(tsize)
+        #tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
+        #tsize = (24,24)
+        #save_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR,tsize)
+        #tb.SetToolBitmapSize(tsize)
 
         #menu
         filemenu=wx.Menu()
-        menuSave = filemenu.Append(wx.ID_OPEN,"OPEN","Open a data file")
+        menuSave = filemenu.Append(wx.ID_SAVE,"SAVE","Save a data file")
         menuExit = filemenu.Append(wx.ID_EXIT, "EXIT", "Terminate the Program")
 
         #plotmenu=wx.Menu()
@@ -43,8 +43,8 @@ class FFTPanel(wx.Frame):
         #self.Bind(wx.EVT_MENU, self.ChangeLimit,menuLim)
 
         #Events on toolbar
-        tb.AddLabelTool(10,'Save',save_bmp)
-        self.Bind(wx.EVT_TOOL,self.OnSave,id=10)
+        #tb.AddLabelTool(10,'Save',save_bmp)
+        #self.Bind(wx.EVT_TOOL,self.OnSave,id=10)
 
 
         #do all the figure plotting things. Reason why we don't do that in a separate class is because the navigation tool bar doesn't like to work
