@@ -92,8 +92,6 @@ class FFTPanel(wx.Frame):
         xbox.Add(xLowLimLabel,0,wx.ALIGN_CENTRE|wx.ALL)
         xbox.Add(xHighLimLabel,0,wx.ALIGN_CENTRE|wx.ALL)
 
-        #sizer.Add(box,0,wx.ALIGN_CENTRE|wx.ALL,5)
-
         xControlBox = wx.BoxSizer(wx.VERTICAL)
         self.xLowLimCtrl = wx.SpinCtrlDouble(self,value='0.00',min=0.00,max=1e10,inc=1)
         self.xHighLimCtrl = wx.SpinCtrlDouble(self,value='20000',min=0.00,max=1e10,inc=1)

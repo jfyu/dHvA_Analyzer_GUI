@@ -175,17 +175,24 @@ class dHvAFrame(wx.Frame):
         self.smoothFFT_winCtrl = wx.ComboBox(self,choices=windowType_list,style=wx.CB_READONLY)
         self.smoothFFT_winCtrl.SetValue('hamming')
 
+        self.smoothFFT_winlenCtrl = wx.SpinCtrl(self,min=3,max=1000,initial=30)
+
         self.smoothButton = wx.CheckBox(self,-1,'ON')
         self.smoothButton.SetValue(True)
  
-        self.smoothFFT_sizer.Add(self.smoothButton,1,wx.EXPAND | wx.ALIGN_CENTER)
-        self.smoothFFT_sizer.Add(wx.StaticText(self,-1,'Window Type'),0,wx.EXPAND|wx.ALIGN_CENTER)
-        self.smoothFFT_sizer.Add(self.smoothFFT_winCtrl,1,wx.EXPAND | wx.ALIGN_CENTER)
+        self.smoothFFTBox_sizer.Add(self.smoothButton,1,wx.EXPAND | wx.ALIGN_CENTER)
 
-        self.smoothFFTBox_sizer.Add(self.smoothFFT_sizer,0,wx.EXPAND)
+        self.smoothFFT_ctrlsizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.smoothFFT_ctrlsizer.Add(wx.StaticText(self,-1,'Window Type'),0,wx.EXPAND|wx.ALIGN_CENTER)
+        self.smoothFFT_ctrlsizer.Add(self.smoothFFT_winCtrl,1,wx.EXPAND | wx.ALIGN_CENTER)
+        self.smoothFFT_ctrlsizer.Add(wx.StaticText(self,-1,'Window Length'),0,wx.EXPAND|wx.ALIGN_CENTER)
+        self.smoothFFT_ctrlsizer.Add(self.smoothFFT_winlenCtrl,1,wx.EXPAND|wx.ALIGN_CENTER)
+
+        self.smoothFFTBox_sizer.Add(self.smoothFFT_ctrlsizer,0,wx.EXPAND)
 
         #SmoothEvent
         self.Bind(wx.EVT_COMBOBOX,self.smoothType,self.smoothFFT_winCtrl)
+        self.Bind(wx.EVT_SPINCTRL,self.setWinLens,self.smoothFFT_winlenCtrl)
        
         #Apply button
         self.applyButton = wx.Button(self,wx.ID_APPLY)
@@ -194,7 +201,7 @@ class dHvAFrame(wx.Frame):
 
         #Apply button events
         self.Bind(wx.EVT_BUTTON,self.applyChanges,self.applyButton)
-
+        
         #set up nested control sizers
         self.ctrlSizer = wx.BoxSizer(wx.VERTICAL)
         self.ctrlSizer.Add(self.fileBox_sizer,0,wx.EXPAND,border=5)
@@ -301,6 +308,9 @@ class dHvAFrame(wx.Frame):
     def smoothType(self,e):
         self.smoothWinType = self.smoothFFT_winCtrl.GetValue()
 
+    def setWinLens(self,e):
+        self.winlens = self.smoothFFT_winlenCtrl.GetValue()
+
     def applyChanges(self,e):
         if self.data_file != None:
             #select data based on the Range of Interest 
@@ -330,7 +340,8 @@ class dHvAFrame(wx.Frame):
             self.plotWindow.waveletType = self.despikeWaveType
         if self.smoothButton.GetValue()==True:
             self.smoothOn = True
-            self.plotWindow.smoothWinType = self.smoothWinType 
+            self.plotWindow.smoothWinType = self.smoothWinType
+            self.plotWindow.winlens = self.winlens
         #self.plotWindow.xmin=self.xmin
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()

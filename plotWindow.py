@@ -30,6 +30,7 @@ class plotWindow(wx.Window):
         self.smoothOn= True
         self.polyOn= True
         self.smoothWinType = 'hamming'
+        self.winlens = 30
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.x,self.InY)
         self.inYState = True
         self.outYState = False
@@ -131,7 +132,7 @@ class plotWindow(wx.Window):
         #invert the field
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.despikeY,self.sortedX)
         if self.smoothOn:
-            self.smoothY = dHvA_Util.smooth(self.interp_data,30,self.smoothWinType)
+            self.smoothY = dHvA_Util.smooth(self.interp_data,self.winlens,self.smoothWinType)
             window_func = eval('signal.'+self.smoothWinType)
             window_to_use = window_func(len(self.smoothY))
             self.windowed_dataY = window_to_use*self.smoothY
