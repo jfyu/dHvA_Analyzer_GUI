@@ -23,6 +23,7 @@ class dHvAFrame(wx.Frame):
         self.despikeLvl = 2
         self.despikeWaveType = 'coif2'
         self.smoothWinType = 'hamming'
+        self.winlens = 30
         #same initialization as wx.Frame
         wx.Frame.__init__(self,*args,**kwargs)
 
@@ -254,39 +255,39 @@ class dHvAFrame(wx.Frame):
     #    pass
 
     def setXdata(self,e):
-        try:
-            self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
-        except AttributeError:
-            message="Select a File first!"
-            caption = "Error!"
-            warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
-            warningDlg.ShowModal()
-            warningDlg.Destroy()
-            self.OnOpen(self)
+        #try:
+        self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
+        #except AttributeError:
+        #    message="Select a File first!"
+        #    caption = "Error!"
+        #    warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
+        #    warningDlg.ShowModal()
+        #    warningDlg.Destroy()
+        #    self.OnOpen(self)
 
         
     def setInYdata(self,e):
-        try:
-            self.InYdata = self.vardict[self.Data_comboBox[1].GetValue()]
-        except AttributeError:
-            message="Select a File first!"
-            caption = "Error!"
-            warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
-            warningDlg.ShowModal()
-            warningDlg.Destroy()
-            self.OnOpen(self)
+        #try:
+        self.InYdata = self.vardict[self.Data_comboBox[1].GetValue()]
+        #except AttributeError:
+        #    message="Select a File first!"
+        #    caption = "Error!"
+        #    warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
+        #    warningDlg.ShowModal()
+        #    warningDlg.Destroy()
+        #    self.OnOpen(self)
 
 
     def setOutYdata(self,e):
-        try:
-            self.OutYdata = self.vardict[self.Data_comboBox[2].GetValue()]
-        except AttributeError:
-            message="Select a File first!"
-            caption = "Error!"
-            warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
-            warningDlg.ShowModal()
-            warningDlg.Destroy()
-            self.OnOpen(self)
+        #try:
+        self.OutYdata = self.vardict[self.Data_comboBox[2].GetValue()]
+        #except AttributeError:
+        #    message="Select a File first!"
+        #    caption = "Error!"
+        #    warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
+        #    warningDlg.ShowModal()
+        #    warningDlg.Destroy()
+        #    self.OnOpen(self)
 
 
     def minH_Change(self,e):
@@ -315,10 +316,8 @@ class dHvAFrame(wx.Frame):
         if self.data_file != None:
             #select data based on the Range of Interest 
             self.plotWindow.x,self.plotWindow.InY,self.plotWindow.OutY = dHvA_Util.select_data(self.xdata,self.InYdata,self.OutYdata,self.xmin,self.xmax)
-            try:
-                self.plotWindow.x[1]
-            except IndexError:
-                message="No Data in Selected Range!"
+            if len(self.plotWindow.x)<100:
+                message="Very little or no data in selected range!"
                 caption = "Error!"
                 warningDlg = wx.MessageDialog(self,message, caption, wx.OK|wx.ICON_ERROR)
                 warningDlg.ShowModal()
@@ -342,6 +341,7 @@ class dHvAFrame(wx.Frame):
             self.smoothOn = True
             self.plotWindow.smoothWinType = self.smoothWinType
             self.plotWindow.winlens = self.winlens
+            print self.winlens
         #self.plotWindow.xmin=self.xmin
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
