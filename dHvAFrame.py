@@ -346,6 +346,12 @@ class dHvAFrame(wx.Frame):
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
+        if self.plotWindow.despikeLength:
+            DespikeMessage = "Reconstructed Wavelet Length Does Not Match the Original. Spike Removal Unsuccessful!"
+            DespikeCaption = "Warning"
+            despikeDlg = wx.MessageDialog(self,DespikeMessage,DespikeCaption,wx.OK|wx.ICON_WARNING)
+            despikeDlg.ShowModal()
+            despikeDlg.Destroy()
         self.FFTPanel.Y = self.plotWindow.windowed_dataY
         self.FFTPanel.delta_inv_x = self.plotWindow.delta_inv_x
         self.FFTPanel.draw()
