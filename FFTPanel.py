@@ -112,8 +112,8 @@ class FFTPanel(wx.Frame):
         ybox.Add(yHighLimLabel,0,wx.ALIGN_CENTRE|wx.ALL)
 
         yControlBox = wx.BoxSizer(wx.VERTICAL)
-        self.yLowLimCtrl = wx.SpinCtrlDouble(self,value='0.00',min=0.00,max=1e10,inc=0.001)
-        self.yHighLimCtrl = wx.SpinCtrlDouble(self,value='10',min=0.00,max=1e10,inc=0.001)
+        self.yLowLimCtrl = wx.SpinCtrlDouble(self,value='0.00',min=0.00,max=1e10,inc=0.00001)
+        self.yHighLimCtrl = wx.SpinCtrlDouble(self,value='10',min=0.00,max=1e10,inc=0.00001)
         yControlBox.Add(self.yLowLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
         yControlBox.Add(self.yHighLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
 
