@@ -81,7 +81,14 @@ class FFTPanel(wx.Frame):
         #save button
         self.saveButton =wx.Button(self,-1,'Save Data')
         self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
+        #clear table button
+        self.clearButton=wx.Button(self,-1,'Clear Table')
+        self.Bind(wx.EVT_BUTTON,self.ClearTable,self.clearButton)
 
+        #Button Sizer
+        buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
+        buttonSizer.Add(self.saveButton,0,wx.ALIGN_CENTRE|wx.ALL|wx.EXPAND)
+        buttonSizer.Add(self.clearButton,0,wx.ALIGN_CENTRE|wx.ALL|wx.EXPAND)
         #Change Size Controls`
         LimitBox = wx.StaticBox(self,-1,"Change x-axis Limits")
         LimitBoxSizer = wx.StaticBoxSizer(LimitBox,wx.VERTICAL)
@@ -139,7 +146,7 @@ class FFTPanel(wx.Frame):
         self.tableSizer.Add(LimitBoxSizer,0,wx.EXPAND)
         #self.tableSizer.Add(self.warningText,0,wx.EXPAND)
         self.tableSizer.Add(self.DataTable,1,wx.EXPAND)
-        self.tableSizer.Add(self.saveButton,0,wx.EXPAND)
+        self.tableSizer.Add(buttonSizer,0,wx.EXPAND)
         
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.sizer.Add(self.CanvasSizer,1,wx.EXPAND)
@@ -254,3 +261,11 @@ class FFTPanel(wx.Frame):
 
     def setyHighLim(self,e):
         self.ylim[1] = self.yHighLimCtrl.GetValue()
+
+    def ClearTable(self,e):
+        print "number of rows is "+str(self.row)
+        i=1
+        while i<=self.row+1:
+            self.DataTable.table.DeleteRow()
+            i=i+1
+   
