@@ -9,7 +9,7 @@ from matplotlib.figure import Figure
 from matplotlib.widgets import Cursor
 import dHvA_Util
 from CustomDataTable import *
-#import os
+import os
 import csv
 #from PlotDialog import *
 
@@ -120,7 +120,7 @@ class FFTPanel(wx.Frame):
 
         yControlBox = wx.BoxSizer(wx.VERTICAL)
         self.yLowLimCtrl = wx.SpinCtrlDouble(self,value='0.00',min=0.00,max=1e10,inc=0.00001)
-        self.yHighLimCtrl = wx.SpinCtrlDouble(self,value='10',min=0.00,max=1e10,inc=0.00001)
+        self.yHighLimCtrl = wx.SpinCtrlDouble(self,value='0.5',min=0.00,max=1e10,inc=0.00001)
         yControlBox.Add(self.yLowLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
         yControlBox.Add(self.yHighLimCtrl,0,wx.ALIGN_CENTRE|wx.ALL)
 
@@ -185,7 +185,7 @@ class FFTPanel(wx.Frame):
         self.FFTPlot.set_title('FFT')
         self.FFTPlot.grid(True)
         self.FFTPlot.relim()
-        self.FFTPlot.set_xlim([0,20000])
+        self.FFTPlot.set_xlim([0,10000])
         #self.FFTPlot.set_ylim([0,0.5])
         self.FFTPlot.autoscale(True,axis='y')
 
