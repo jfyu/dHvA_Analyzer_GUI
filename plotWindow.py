@@ -28,7 +28,8 @@ class plotWindow(wx.Window):
         self.waveletType = 'coif2'
         self.despikeOn = False
         self.despikeLength = False
-        self.smoothOn= True
+        self.smoothOn= False
+        self.windowOn= True
         self.polyOn= True
         self.smoothWinType = 'hamming'
         self.winlens = 30
@@ -116,12 +117,14 @@ class plotWindow(wx.Window):
                 print 'Reconstructed Wavelet Length does not match'
                 print 'Reconstructed wavelet length is '+str(len(self.despikeY))
                 print 'original length is '+str(len(self.noBG_Y))
-                print 'return the original array'
-                self.despikeY = self.noBG_Y
+                #print 'return the original array'
+                #self.despikeY = self.noBG_Y
+                self.despikeY = self.despikeY[0:len(self.noBG_Y)]
                 self.despikeLength = True
             else:
                 self.despikeLength=False
         else:
+            self.despikeLength = False
             self.despikeY = self.noBG_Y
         
         self.despikePlot.plot(self.sortedX,self.despikeY,linewidth=2,color='red')
@@ -143,12 +146,14 @@ class plotWindow(wx.Window):
         self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.despikeY,self.sortedX)
         if self.smoothOn:
             self.smoothY = dHvA_Util.smooth(self.interp_data,self.winlens,self.smoothWinType)
+        else:
+            self.smoothY = self.interp_data
+        if self.windowOn:
             window_func = eval('signal.'+self.smoothWinType)
             window_to_use = window_func(len(self.smoothY))
             self.windowed_dataY = window_to_use*self.smoothY
         else:
-            self.smoothY = self.interp_data
-            self.windowed_dataY = self.interp_data
+            self.windowed_dataY=self.smoothY
         self.smoothPlot.plot(self.inv_x,self.smoothY,linewidth=2,color='blue')
         self.smoothPlot.plot(self.inv_x,self.windowed_dataY,linewidth=2,color='red')
         self.smoothPlot.set_xlabel('1/B (1/T)')

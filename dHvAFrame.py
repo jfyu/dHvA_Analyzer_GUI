@@ -168,7 +168,7 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
 
         #Smooth, Interpolate and FFT controls
-        self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth and Windowing (default OFF)')
+        self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth (default OFF) and Windowing (default ON)')
         self.smoothFFTBox_sizer = wx.StaticBoxSizer(self.smoothFFTBox,wx.VERTICAL)
 
         self.smoothFFT_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -178,10 +178,13 @@ class dHvAFrame(wx.Frame):
 
         self.smoothFFT_winlenCtrl = wx.SpinCtrl(self,min=3,max=1000,initial=30)
 
-        self.smoothButton = wx.CheckBox(self,-1,'ON')
-        self.smoothButton.SetValue(True)
+        self.smoothButton = wx.CheckBox(self,-1,'Smooth ON')
+        self.smoothButton.SetValue(False)
+        self.windowButton = wx.CheckBox(self,-1,'Window ON')
+        self.windowButton.SetValue(True)
  
         self.smoothFFTBox_sizer.Add(self.smoothButton,1,wx.EXPAND | wx.ALIGN_CENTER)
+        self.smoothFFTBox_sizer.Add(self.windowButton,1,wx.EXPAND | wx.ALIGN_CENTER)
 
         self.smoothFFT_ctrlsizer = wx.BoxSizer(wx.HORIZONTAL)
         self.smoothFFT_ctrlsizer.Add(wx.StaticText(self,-1,'Window Type'),0,wx.EXPAND|wx.ALIGN_CENTER)
@@ -333,21 +336,37 @@ class dHvAFrame(wx.Frame):
             for i in range(0,6):
                 if self.polyOrderRadioButton[i].GetValue() == True:
                     self.plotWindow.polyOrder=i+1
+        else:
+            self.plotWindow.polyOrder = [0]
         if self.despikeButton.GetValue() == True:
             self.plotWindow.despikeOn = True
             self.plotWindow.decompLevel = self.despikeLvl
             self.plotWindow.waveletType = self.despikeWaveType
-        if self.smoothButton.GetValue()==True:
-            self.smoothOn = True
+        else:
+            self.plotWindow.despikeOn=False
+        
+        if self.windowButton.GetValue()==True:
+            self.plotWindow.windowOn = True
             self.plotWindow.smoothWinType = self.smoothWinType
             self.plotWindow.winlens = self.winlens
-            print self.winlens
+        else:
+            self.plotWindow.windowOn=False
+        
+        if self.smoothButton.GetValue()==True:
+            self.plotWindow.smoothOn=True
+            self.plotWindow.smoothWinType = self.smoothWinType
+            self.plotWindow.winlens = self.winlens
+        else:
+            self.plotWindow.smoothOn=False
+        #else:
+            #self.smoothOn = False
+            #print self.winlens
         #self.plotWindow.xmin=self.xmin
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
         if self.plotWindow.despikeLength:
-            DespikeMessage = "Reconstructed Wavelet Length Does Not Match the Original. Spike Removal Unsuccessful!"
+            DespikeMessage = "Reconstructed Wavelet Length Does Not Match the Original. Dropped the extra length elements."
             DespikeCaption = "Warning"
             despikeDlg = wx.MessageDialog(self,DespikeMessage,DespikeCaption,wx.OK|wx.ICON_WARNING)
             despikeDlg.ShowModal()
