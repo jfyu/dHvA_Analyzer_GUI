@@ -329,8 +329,10 @@ class dHvAFrame(wx.Frame):
             #self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.OutY)
         if self.inYRadioButton.GetValue() == True:
             self.plotWindow.inYState = True
+            self.plotWindow.outYState = False
         if self.outYRadioButton.GetValue() == True:
             self.plotWindow.outYState=True
+            self.plotWindow.inYState = True
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOrder=[]
             for i in range(0,6):
