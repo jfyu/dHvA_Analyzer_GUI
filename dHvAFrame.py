@@ -334,12 +334,14 @@ class dHvAFrame(wx.Frame):
             self.plotWindow.outYState=True
             self.plotWindow.inYState = True
         if self.polyButton.GetValue() == True:
+            self.plotWindow.polyOn = True
             self.plotWindow.polyOrder=[]
             for i in range(0,6):
                 if self.polyOrderRadioButton[i].GetValue() == True:
                     self.plotWindow.polyOrder=i+1
         else:
             self.plotWindow.polyOrder = [0]
+            self.plotWindow.polyOn = False
         if self.despikeButton.GetValue() == True:
             self.plotWindow.despikeOn = True
             self.plotWindow.decompLevel = self.despikeLvl
