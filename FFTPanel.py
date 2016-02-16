@@ -169,7 +169,7 @@ class FFTPanel(wx.Frame):
         #    for i in range(0,len(self.FFTPlot.lines)):
         #        del self.FFTPlot.lines[0]
         #self.FFTPlot.cla()
-        print len(self.FFTPlot.lines)
+        #print len(self.FFTPlot.lines)
         #smooth and window the data
         self.DeltaFreqY = 1/self.delta_inv_x 
         #padd the data

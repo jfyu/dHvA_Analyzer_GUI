@@ -17,17 +17,24 @@ def select_data(x, inY, outY, xmin, xmax):
     temp_field = []
     temp_inY = []
     temp_outY = []
-    for i in range(0,len(x)):
-        if (x[i]) > xmin and (x[i]) < xmax:
-            temp_field.append(x[i])
-            temp_inY.append(inY[i])
-            temp_outY.append(outY[i])
+    indic = np.where(np.logical_and(np.array(x)>=xmin,np.array(x)<=xmax))[0]
+    #print indic, len(x)
+    if len(indic)>0:
+        temp_field = x[indic[0]:indic[-1]+1]
+        temp_inY = inY[indic[0]:indic[-1]+1]
+        temp_outY = outY[indic[0]:indic[-1]+1]
+    # for i in range(0,len(x)):
+    #     if (x[i]) > xmin and (x[i]) < xmax:
+    #         temp_field.append(x[i])
+    #         temp_inY.append(inY[i])
+    #         temp_outY.append(outY[i])
             #temp_field = np.append(temp_field,x[i])
             #temp_inY = np.append(temp_inY,inY[i])
             #temp_outY = np.append(temp_outY,outY[i])
-    try: 
-        temp_field[1] #in case the selected range isn't really in the data range
-    except IndexError:
+    #try: 
+        #temp_field[1] #in case the selected range isn't really in the data range
+    #except IndexError:
+    else:
         print "Data doesn't exist in this range"
         
     return temp_field, temp_inY, temp_outY
