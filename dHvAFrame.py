@@ -103,12 +103,12 @@ class dHvAFrame(wx.Frame):
         self.rangeBox = wx.StaticBox(self,-1,'Select the Data Range of Interest')
         self.rangeBox_sizer = wx.StaticBoxSizer(self.rangeBox,wx.HORIZONTAL)
 
-        self.minH_Ctrl = wx.SpinCtrlDouble(self,value='0.0',min=0.0,max=16.0,inc=0.5)
+        self.minH_Ctrl = wx.SpinCtrlDouble(self,value='0.0',min=0.0,max=18.0,inc=0.5)
         self.minH_Ctrl.SetDigits(2)
         self.rangeBox_sizer.Add(wx.StaticText(self,-1,'min'),0,wx.ALIGN_LEFT)
         self.rangeBox_sizer.Add(self.minH_Ctrl,1,wx.EXPAND | wx.ALIGN_CENTER)
 
-        self.maxH_Ctrl = wx.SpinCtrlDouble(self,value='16.0',min=0.0,max=16.0,inc=0.5)
+        self.maxH_Ctrl = wx.SpinCtrlDouble(self,value='15.9',min=0.0,max=18.0,inc=0.5)
         self.maxH_Ctrl.SetDigits(2)
         self.rangeBox_sizer.Add(wx.StaticText(self,-1,'max'),0,wx.ALIGN_LEFT)
         self.rangeBox_sizer.Add(self.maxH_Ctrl,1,wx.EXPAND | wx.ALIGN_CENTER)
