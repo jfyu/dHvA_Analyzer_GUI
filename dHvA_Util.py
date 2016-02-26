@@ -144,6 +144,17 @@ def four_point(x,y,x0):
         result += (x0 - x[0])*(x0 - x[1])*(x0 - x[2])/( (x[3] - x[0])*(x[3] - x[1])*(x[3] - x[2]))*y[3]
         return result
 
+def inv_field_interp(data,B):
+    Pow_2 = next_pow_2(len(B))
+    N = pow(2,Pow_2)
+    inv_B_min = 1.0/max(B)
+    inv_B_max = 1.0/min(B)
+    Delta_inv_B = (inv_B_max-inv_B_min)/N
+    inv_B_array = np.arange(inv_B_min, inv_B_max,Delta_inv_B)#don't have the problem of four points, make length to N
+    inv_data_func = interp1d(B,data,bounds_error=False,fill_value="extrapolate")
+    inv_data = inv_data_func(1/inv_B_array)
+    return inv_data, inv_B_array,Delta_inv_B
+ 
 def inv_field(x_i,B_i):
     Pow_2 = next_pow_2( len(B_i) )   #next_pow_2 is defined at start of this file
     N = pow(2,Pow_2)

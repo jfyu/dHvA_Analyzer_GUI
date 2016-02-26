@@ -143,7 +143,7 @@ class plotWindow(wx.Window):
         
         #smooth and window the data
         #invert the field
-        self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field(self.despikeY,self.sortedX)
+        self.interp_data,self.inv_x,self.delta_inv_x = dHvA_Util.inv_field_interp(self.despikeY,self.sortedX)
         if self.smoothOn:
             self.smoothY = dHvA_Util.smooth(self.interp_data,self.winlens,self.smoothWinType)
         else:
