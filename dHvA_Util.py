@@ -145,6 +145,7 @@ def four_point(x,y,x0):
         return result
 
 def inv_field_interp(data,B):
+    #print "using numpy interp"
     Pow_2 = next_pow_2(len(B))
     N = pow(2,Pow_2)
     inv_B_min = 1.0/max(B)

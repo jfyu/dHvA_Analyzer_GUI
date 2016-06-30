@@ -20,8 +20,16 @@ class plotWindow(wx.Window):
         self.x = np.linspace(0.1,20,183)
         self.InY = np.sin(self.x)
         self.OutY = np.cos(self.x)
+        self.phase = 90
+        self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)+self.OutY*np.sin(self.phase*np.pi/180)
+        print "phase is "+str(self.phase)
+        print "inY is multiplied by "+str(np.cos(self.phase*np.pi/180))
+        print "outY is multiplied by "+str(np.sin(self.phase**np.pi/180))
+        print "Difference for inY "+str(self.CombinedY[-1]-self.InY[-1])
+        print "Difference for outY "+str(self.CombinedY[-1]-self.OutY[-1])
+
         self.sortedX = self.x
-        self.sortedSignal = self.InY
+        self.sortedSignal = self.CombinedY
         self.noBG_Y = self.InY
         self.polyOrder = 3
         self.decompLevel = 2
@@ -64,22 +72,28 @@ class plotWindow(wx.Window):
         #    del self.rawPlot.lines[0]
         #    del self.rawPlot.lines[0] #delete the second one, since the first one is deleted, the index returns to 0
         #print len(self.rawPlot.lines)
+        
+        #calculate the combined signal
+        self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)+self.OutY*np.sin(self.phase*np.pi/180)
+        print str(self.CombinedY[-1]-self.InY[-1])
         self.rawPlot.plot(self.x,self.InY,linewidth=2,color='blue')
         self.rawPlot.plot(self.x,self.OutY,linewidth=2,color='red')
+        self.rawPlot.plot(self.x,self.CombinedY,linewidth=2,color='green')
         self.rawPlot.relim()
         self.rawPlot.autoscale(True)
         self.rawPlot.set_title('Raw data')
         self.rawPlot.set_xlabel('Field (T)')
-        self.rawPlot.legend(['In Phase','Out Phase'],fontsize=11,fancybox=True,framealpha=0.5)
+        self.rawPlot.legend(['In Phase','Out Phase','Combined'],fontsize=11,fancybox=True,framealpha=0.5)
         self.rawPlot.grid(True)
 
         #plot Polynomial BG
 
         #sort the signals
-        if self.inYState == True:
-            self.sortedX, self.sortedSignal = dHvA_Util.sort_array(self.x, self.InY)
-        if self.outYState == True:
-            self.sortedX,self.sortedSignal = dHvA_Util.sort_array(self.x,self.OutY)
+        self.sortedX,self.sortedSignal = dHvA_Util.sort_array(self.x,self.CombinedY)
+        # if self.inYState == True:
+            # self.sortedX, self.sortedSignal = dHvA_Util.sort_array(self.x, self.InY)
+        # if self.outYState == True:
+            # self.sortedX,self.sortedSignal = dHvA_Util.sort_array(self.x,self.OutY)
 
         if self.polyOn:
             self.PolyBG_Coeff = np.polyfit(self.sortedX,self.sortedSignal,self.polyOrder)

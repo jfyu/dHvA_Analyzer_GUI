@@ -18,6 +18,7 @@ class dHvAFrame(wx.Frame):
         self.xdata = None
         self.InYdata = None
         self.OutYdata = None
+        self.phase = 0
         self.xmin = 0
         self.xmax = 16
         self.despikeLvl = 2
@@ -87,18 +88,29 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_COMBOBOX, self.setInYdata,self.Data_comboBox[1])
         self.Bind(wx.EVT_COMBOBOX, self.setOutYdata,self.Data_comboBox[2])
 
-        #Choose in or out of phase Y
-        self.YChooseBox = wx.StaticBox(self,-1,'Choose Data to Analyze')
-        self.YChooseBox_sizer = wx.StaticBoxSizer(self.YChooseBox,wx.HORIZONTAL)
+        #set phase
+        self.phaseBox = wx.StaticBox(self,-1,'Choose Phase')
+        self.phaseBox_sizer = wx.StaticBoxSizer(self.phaseBox,wx.HORIZONTAL)
 
-        self.inYRadioButton = wx.RadioButton(self,-1,'In Phase Y',style=wx.RB_GROUP)
-        self.outYRadioButton = wx.RadioButton(self,-1,'Out Phase Y')
+        self.phase_Ctrl = wx.SpinCtrl(self,min=0,max=360,initial=0 )
+        self.phaseBox_sizer.Add(wx.StaticText(self,-1,'Phase Angle (deg)'),0,wx.ALIGN_LEFT)
+        self.phaseBox_sizer.Add(self.phase_Ctrl,1,wx.EXPAND | wx.ALIGN_CENTER)
+
+        #set up events
+        self.Bind(wx.EVT_SPINCTRL, self.phase_Change, self.phase_Ctrl)
+ 
+#         #Choose in or out of phase Y
+#         self.YChooseBox = wx.StaticBox(self,-1,'Choose Data to Analyze')
+#         self.YChooseBox_sizer = wx.StaticBoxSizer(self.YChooseBox,wx.HORIZONTAL)
+
+#         self.inYRadioButton = wx.RadioButton(self,-1,'In Phase Y',style=wx.RB_GROUP)
+#         self.outYRadioButton = wx.RadioButton(self,-1,'Out Phase Y')
         
-        self.YChooseBox_sizer.Add(self.inYRadioButton,wx.ALIGN_LEFT)
-        self.YChooseBox_sizer.Add(self.outYRadioButton,wx.ALIGN_LEFT)
+#         self.YChooseBox_sizer.Add(self.inYRadioButton,wx.ALIGN_LEFT)
+#         self.YChooseBox_sizer.Add(self.outYRadioButton,wx.ALIGN_LEFT)
 
         #set up controls 
-
+        
         #min and max plot range
         self.rangeBox = wx.StaticBox(self,-1,'Select the Data Range of Interest')
         self.rangeBox_sizer = wx.StaticBoxSizer(self.rangeBox,wx.HORIZONTAL)
@@ -211,7 +223,8 @@ class dHvAFrame(wx.Frame):
         self.ctrlSizer.Add(self.fileBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.comboBox_bsizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.rangeBox_sizer,0,wx.EXPAND,border=5)
-        self.ctrlSizer.Add(self.YChooseBox_sizer,0,wx.EXPAND,border=5)
+        self.ctrlSizer.Add(self.phaseBox_sizer,0,wx.EXPAND,border=5)
+        #self.ctrlSizer.Add(self.YChooseBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.polyBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.despikeBox_sizer,0,wx.EXPAND,border=5)
         self.ctrlSizer.Add(self.smoothFFTBox_sizer,0,wx.EXPAND,border=5)
@@ -292,6 +305,8 @@ class dHvAFrame(wx.Frame):
         #    warningDlg.Destroy()
         #    self.OnOpen(self)
 
+    def phase_Change(self,e):
+        self.phase = self.phase_Ctrl.GetValue()
 
     def minH_Change(self,e):
         self.xmin = self.minH_Ctrl.GetValue()
@@ -300,7 +315,7 @@ class dHvAFrame(wx.Frame):
 
     def maxH_Change(self,e):
         self.xmax = self.maxH_Ctrl.GetValue()
-        #self.plotWindow.draw()
+        #self.plotWind`ow.draw()
         #self.plotWindow.repaint()
 
     def despikeLevel(self,e):
@@ -327,12 +342,15 @@ class dHvAFrame(wx.Frame):
                 warningDlg.Destroy()
             #Find phase and find signal
             #self.InY, self.outY = dHvA_Util.find_angle(self.plotWindow.InY,self.plotWindow.OutY)
-        if self.inYRadioButton.GetValue() == True:
-            self.plotWindow.inYState = True
-            self.plotWindow.outYState = False
-        if self.outYRadioButton.GetValue() == True:
-            self.plotWindow.outYState=True
-            self.plotWindow.inYState = True
+
+            #Get phase
+            self.plotWindow.phase = self.phase
+        # if self.inYRadioButton.GetValue() == True:
+        #     self.plotWindow.inYState = True
+        #     self.plotWindow.outYState = False
+        # if self.outYRadioButton.GetValue() == True:
+        #     self.plotWindow.outYState=True
+        #     self.plotWindow.inYState = True
         if self.polyButton.GetValue() == True:
             self.plotWindow.polyOn = True
             self.plotWindow.polyOrder=[]
