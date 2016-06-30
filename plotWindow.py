@@ -22,11 +22,11 @@ class plotWindow(wx.Window):
         self.OutY = np.cos(self.x)
         self.phase = 90
         self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)+self.OutY*np.sin(self.phase*np.pi/180)
-        print "phase is "+str(self.phase)
-        print "inY is multiplied by "+str(np.cos(self.phase*np.pi/180))
-        print "outY is multiplied by "+str(np.sin(self.phase**np.pi/180))
-        print "Difference for inY "+str(self.CombinedY[-1]-self.InY[-1])
-        print "Difference for outY "+str(self.CombinedY[-1]-self.OutY[-1])
+        # print "phase is "+str(self.phase)
+        # print "inY is multiplied by "+str(np.cos(self.phase*np.pi/180))
+        # print "outY is multiplied by "+str(np.sin(self.phase**np.pi/180))
+        # print "Difference for inY "+str(self.CombinedY[-1]-self.InY[-1])
+        # print "Difference for outY "+str(self.CombinedY[-1]-self.OutY[-1])
 
         self.sortedX = self.x
         self.sortedSignal = self.CombinedY
@@ -75,7 +75,7 @@ class plotWindow(wx.Window):
         
         #calculate the combined signal
         self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)+self.OutY*np.sin(self.phase*np.pi/180)
-        print str(self.CombinedY[-1]-self.InY[-1])
+        #print str(self.CombinedY[-1]-self.InY[-1])
         self.rawPlot.plot(self.x,self.InY,linewidth=2,color='blue')
         self.rawPlot.plot(self.x,self.OutY,linewidth=2,color='red')
         self.rawPlot.plot(self.x,self.CombinedY,linewidth=2,color='green')
