@@ -97,10 +97,10 @@ def find_angle(A1X,A1Y):
     #print(theta_deg)
     return UnSortSignalA,UnSortSignalAY
 
-def wavelet_filter(A1X, decomp_lev, type):
+def wavelet_filter(A1X, decomp_lev, type, mode):
     if isinstance(decomp_lev, int) and decomp_lev > 0:
         #print(pywt.wavelist('bior'))
-        decomp = pywt.wavedec(A1X[:], type, level=decomp_lev)
+        decomp = pywt.wavedec(A1X[:], type, mode=mode,level=decomp_lev)
       
         sigma_j = np.median(abs(decomp[-1]))/0.6745
         threshold_j = sigma_j*np.sqrt(2*np.log(len(A1X)))
@@ -109,7 +109,7 @@ def wavelet_filter(A1X, decomp_lev, type):
             decomp[i + 1] = pywt.thresholding.less(decomp[i+1],threshold_j)
             decomp[i + 1] = pywt.thresholding.greater(decomp[i+1],-threshold_j)
         
-        filt_A1X = pywt.waverec(decomp, type)
+        filt_A1X = pywt.waverec(decomp, type,mode=mode)
         #if len(filt_A1X)!= len(A1X):
         #    print 'Reconstructed Wavelet Length does not match'
         #    print 'Reconstructed wavelet length is '+str(len(filt_A1X))

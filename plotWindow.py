@@ -34,6 +34,7 @@ class plotWindow(wx.Window):
         self.polyOrder = 3
         self.decompLevel = 2
         self.waveletType = 'coif2'
+        self.waveletMode = 'sym'
         self.despikeOn = False
         self.despikeLength = False
         self.smoothOn= False
@@ -126,7 +127,7 @@ class plotWindow(wx.Window):
         #    del self.despikePlot.lines[0]
         self.despikePlot.plot(self.sortedX,self.noBG_Y,linewidth=2,color='blue')
         if self.despikeOn:
-            self.despikeY = dHvA_Util.wavelet_filter(self.noBG_Y,self.decompLevel,self.waveletType)
+            self.despikeY = dHvA_Util.wavelet_filter(self.noBG_Y,self.decompLevel,self.waveletType,self.waveletMode)
             if len(self.despikeY)!=len(self.noBG_Y):
                 print 'Reconstructed Wavelet Length does not match'
                 print 'Reconstructed wavelet length is '+str(len(self.despikeY))

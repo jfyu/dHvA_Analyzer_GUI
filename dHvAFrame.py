@@ -23,6 +23,7 @@ class dHvAFrame(wx.Frame):
         self.xmax = 16
         self.despikeLvl = 2
         self.despikeWaveType = 'coif2'
+        self.despikeWaveMode = 'sym'
         self.smoothWinType = 'hamming'
         self.winlens = 30
         #same initialization as wx.Frame
@@ -167,10 +168,18 @@ class dHvAFrame(wx.Frame):
         self.despike_type_ctrl.SetValue('coif2')
         self.despike_sizer2.Add(wx.StaticText(self,-1,'Wavelet Type'),0,wx.EXPAND | wx.ALIGN_RIGHT)
         self.despike_sizer2.Add(self.despike_type_ctrl,1,wx.EXPAND | wx.ALIGN_RIGHT)
+
+        self.despike_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
+        wavelet_modes = ['sym','zpd','cpd','ppd','sp1','per']#for definitions see pywavelet documentation
+        self.despike_mode_ctrl = wx.ComboBox(self,choices=wavelet_modes,style=wx.CB_READONLY)
+        self.despike_mode_ctrl.SetValue('sym')
+        self.despike_sizer3.Add(wx.StaticText(self,-1,'Signal Extension Modes'),0,wx.EXPAND | wx.ALIGN_RIGHT)
+        self.despike_sizer3.Add(self.despike_mode_ctrl,1,wx.EXPAND|wx.ALIGN_RIGHT)
         
         self.despike_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.despike_sizer.Add(self.despike_sizer1,0,wx.EXPAND)
         self.despike_sizer.Add(self.despike_sizer2,0,wx.EXPAND)
+        self.despike_sizer.Add(self.despike_sizer3,0,wx.EXPAND)
 
         self.despikeBox_sizer.Add(self.despikeButton,0,wx.ALIGN_LEFT)
         self.despikeBox_sizer.Add(self.despike_sizer,0,wx.EXPAND)
@@ -178,6 +187,7 @@ class dHvAFrame(wx.Frame):
         #despike events
         self.Bind(wx.EVT_SPINCTRL,self.despikeLevel,self.despike_lvls_ctrl)
         self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
+        self.Bind(wx.EVT_SPINCTRL,self.despikeMode,self.despike_mode_ctrl)
 
         #Smooth, Interpolate and FFT controls
         self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth (default OFF) and Windowing (default ON)')
@@ -323,6 +333,9 @@ class dHvAFrame(wx.Frame):
 
     def despikeType(self,e):
         self.despikeWaveType = self.despike_type_ctrl.GetValue()
+
+    def despikeMode(self,e):
+        self.despikeWaveMode = self.despike_mode_ctrl.GetValue()
     
     def smoothType(self,e):
         self.smoothWinType = self.smoothFFT_winCtrl.GetValue()
@@ -360,10 +373,12 @@ class dHvAFrame(wx.Frame):
         else:
             self.plotWindow.polyOrder = [0]
             self.plotWindow.polyOn = False
+
         if self.despikeButton.GetValue() == True:
             self.plotWindow.despikeOn = True
             self.plotWindow.decompLevel = self.despikeLvl
             self.plotWindow.waveletType = self.despikeWaveType
+            self.plotWindow.waveletMode = self.despikeWaveMode
         else:
             self.plotWindow.despikeOn=False
         
