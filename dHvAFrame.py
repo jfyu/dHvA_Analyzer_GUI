@@ -22,7 +22,7 @@ class dHvAFrame(wx.Frame):
         self.xmin = 0
         self.xmax = 16
         self.despikeKernel = 3
-        self.despikeThreshold = 10
+        self.despikeThreshold = 100
         # self.despikeLvl = 2
         # self.despikeWaveType = 'coif2'
         # self.despikeWaveMode = 'sym'
@@ -165,7 +165,7 @@ class dHvAFrame(wx.Frame):
         self.despike_sizer1.Add(self.despike_kernel_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
 
         self.despike_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.despike_threshold_ctrl = wx.SpinCtrl(self,value='10',min=0,max=100)
+        self.despike_threshold_ctrl = wx.SpinCtrl(self,value='100',min=0,max=1000000)
         self.despike_sizer2.Add(wx.StaticText(self,-1,'Spike Threshold (%)'),0,wx.ALIGN_LEFT)
         self.despike_sizer2.Add(self.despike_threshold_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
 

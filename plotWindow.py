@@ -134,7 +134,7 @@ class plotWindow(wx.Window):
             print str(self.despikeKernel)
             self.despikeY_tmp = signal.medfilt(self.noBG_Y,self.despikeKernel)
             #self.despike_tmp_diff = abs(self.despikeY_tmp-self.noBG_Y)/self.despikeY_tmp #find the difference between filtered and original and divide by the filtered to find the percentage
-            self.despike_tmp_index =  np.where(self.despikeY>self.despikeY_tmp*self.despikeThreshold/100)
+            self.despike_tmp_index =  np.where(abs(self.despikeY-self.despikeY_tmp)>self.despikeY_tmp*self.despikeThreshold/100)
             # print str(len(self.despikeY))
             # print str(len(self.despike_tmp_index))
             for i in self.despike_tmp_index:
