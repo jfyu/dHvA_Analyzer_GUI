@@ -21,9 +21,11 @@ class dHvAFrame(wx.Frame):
         self.phase = 0
         self.xmin = 0
         self.xmax = 16
-        self.despikeLvl = 2
-        self.despikeWaveType = 'coif2'
-        self.despikeWaveMode = 'sym'
+        self.despikeKernel = 3
+        self.despikeThreshold = 10
+        # self.despikeLvl = 2
+        # self.despikeWaveType = 'coif2'
+        # self.despikeWaveMode = 'sym'
         self.smoothWinType = 'hamming'
         self.winlens = 30
         #same initialization as wx.Frame
@@ -158,36 +160,50 @@ class dHvAFrame(wx.Frame):
         self.despikeButton.SetValue(False)
 
         self.despike_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.despike_lvls_ctrl = wx.SpinCtrl(self,value='2',min=0,max=10)
-        self.despike_sizer1.Add(wx.StaticText(self,-1,'Wavelet Filter Level'),0,wx.ALIGN_LEFT)
-        self.despike_sizer1.Add(self.despike_lvls_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+        self.despike_kernel_ctrl = wx.SpinCtrl(self,value='3',min=1,max=100001)
+        self.despike_sizer1.Add(wx.StaticText(self,-1,'Median Filter Kernel Size (odd integer)'),0,wx.ALIGN_LEFT)
+        self.despike_sizer1.Add(self.despike_kernel_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
 
         self.despike_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        wavelet_names = ['haar','coif1', 'coif2', 'coif3', 'coif4', 'coif5'] #use one family
-        self.despike_type_ctrl = wx.ComboBox(self,choices=wavelet_names,style=wx.CB_READONLY)
-        self.despike_type_ctrl.SetValue('coif2')
-        self.despike_sizer2.Add(wx.StaticText(self,-1,'Wavelet Type'),0,wx.EXPAND | wx.ALIGN_RIGHT)
-        self.despike_sizer2.Add(self.despike_type_ctrl,1,wx.EXPAND | wx.ALIGN_RIGHT)
+        self.despike_threshold_ctrl = wx.SpinCtrl(self,value='10',min=0,max=100)
+        self.despike_sizer2.Add(wx.StaticText(self,-1,'Spike Threshold (%)'),0,wx.ALIGN_LEFT)
+        self.despike_sizer2.Add(self.despike_threshold_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
 
-        self.despike_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
-        wavelet_modes = ['sym','zpd','cpd','ppd','sp1','per']#for definitions see pywavelet documentation
-        self.despike_mode_ctrl = wx.ComboBox(self,choices=wavelet_modes,style=wx.CB_READONLY)
-        self.despike_mode_ctrl.SetValue('sym')
-        self.despike_sizer3.Add(wx.StaticText(self,-1,'Signal Extension Modes'),0,wx.EXPAND | wx.ALIGN_RIGHT)
-        self.despike_sizer3.Add(self.despike_mode_ctrl,1,wx.EXPAND|wx.ALIGN_RIGHT)
+        # for wavelet filtering
+
+        # self.despike_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        # self.despike_lvls_ctrl = wx.SpinCtrl(self,value='2',min=0,max=10)
+        # self.despike_sizer1.Add(wx.StaticText(self,-1,'Wavelet Filter Level'),0,wx.ALIGN_LEFT)
+        # self.despike_sizer1.Add(self.despike_lvls_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+
+        # self.despike_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        # wavelet_names = ['haar','coif1', 'coif2', 'coif3', 'coif4', 'coif5'] #use one family
+        # self.despike_type_ctrl = wx.ComboBox(self,choices=wavelet_names,style=wx.CB_READONLY)
+        # self.despike_type_ctrl.SetValue('coif2')
+        # self.despike_sizer2.Add(wx.StaticText(self,-1,'Wavelet Type'),0,wx.EXPAND | wx.ALIGN_RIGHT)
+        # self.despike_sizer2.Add(self.despike_type_ctrl,1,wx.EXPAND | wx.ALIGN_RIGHT)
+
+        # self.despike_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
+        # wavelet_modes = ['sym','zpd','cpd','ppd','sp1','per']#for definitions see pywavelet documentation
+        # self.despike_mode_ctrl = wx.ComboBox(self,choices=wavelet_modes,style=wx.CB_READONLY)
+        # self.despike_mode_ctrl.SetValue('sym')
+        # self.despike_sizer3.Add(wx.StaticText(self,-1,'Signal Extension Modes'),0,wx.EXPAND | wx.ALIGN_RIGHT)
+        # self.despike_sizer3.Add(self.despike_mode_ctrl,1,wx.EXPAND|wx.ALIGN_RIGHT)
         
         self.despike_sizer = wx.BoxSizer(wx.HORIZONTAL)
         self.despike_sizer.Add(self.despike_sizer1,0,wx.EXPAND)
         self.despike_sizer.Add(self.despike_sizer2,0,wx.EXPAND)
-        self.despike_sizer.Add(self.despike_sizer3,0,wx.EXPAND)
+        # self.despike_sizer.Add(self.despike_sizer3,0,wx.EXPAND)
 
         self.despikeBox_sizer.Add(self.despikeButton,0,wx.ALIGN_LEFT)
         self.despikeBox_sizer.Add(self.despike_sizer,0,wx.EXPAND)
 
         #despike events
-        self.Bind(wx.EVT_SPINCTRL,self.despikeLevel,self.despike_lvls_ctrl)
-        self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
-        self.Bind(wx.EVT_SPINCTRL,self.despikeMode,self.despike_mode_ctrl)
+        self.Bind(wx.EVT_SPINCTRL,self.despikeKernel_value, self.despike_kernel_ctrl)
+        self.Bind(wx.EVT_SPINCTRL,self.despikeThreshold_value, self.despike_threshold_ctrl)
+#         self.Bind(wx.EVT_SPINCTRL,self.despikeLevel,self.despike_lvls_ctrl)
+#         self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
+#         self.Bind(wx.EVT_SPINCTRL,self.despikeMode,self.despike_mode_ctrl)
 
         #Smooth, Interpolate and FFT controls
         self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth (default OFF) and Windowing (default ON)')
@@ -327,15 +343,33 @@ class dHvAFrame(wx.Frame):
         self.xmax = self.maxH_Ctrl.GetValue()
         #self.plotWind`ow.draw()
         #self.plotWindow.repaint()
+    
+    def despikeKernel_value(self,e):
+        if self.despike_kernel_ctrl.GetValue() % 2 != 0:
+            self.despikeKernel = self.despike_kernel_ctrl.GetValue()
+        
+        else:
+            message2 = "Kernel has to be an odd integer! Reset to the nearest odd integer."
+            caption2 = "Error!"
+            warningDlg2 = wx.MessageDialog(self,message2,caption2,wx.OK|wx.ICON_ERROR)
+            warningDlg2.ShowModal()
+            warningDlg2.Destroy()
+            tmp = self.despike_kernel_ctrl.GetValue()
+            self.despike_kernel_ctrl.SetValue(tmp+1)
+            self.despikeKernel = tmp+1
+        print str(self.despikeKernel) 
+    def despikeThreshold_value(self,e):
+        self.despikeThreshold = self.despike_threshold_ctrl.GetValue()
 
-    def despikeLevel(self,e):
-        self.despikeLvl=self.despike_lvls_ctrl.GetValue()
+    #for wavelet filter
+    # def despikeLevel(self,e):
+    #     self.despikeLvl=self.despike_lvls_ctrl.GetValue()
 
-    def despikeType(self,e):
-        self.despikeWaveType = self.despike_type_ctrl.GetValue()
+    # def despikeType(self,e):
+    #     self.despikeWaveType = self.despike_type_ctrl.GetValue()
 
-    def despikeMode(self,e):
-        self.despikeWaveMode = self.despike_mode_ctrl.GetValue()
+    # def despikeMode(self,e):
+    #     self.despikeWaveMode = self.despike_mode_ctrl.GetValue()
     
     def smoothType(self,e):
         self.smoothWinType = self.smoothFFT_winCtrl.GetValue()
@@ -376,9 +410,11 @@ class dHvAFrame(wx.Frame):
 
         if self.despikeButton.GetValue() == True:
             self.plotWindow.despikeOn = True
-            self.plotWindow.decompLevel = self.despikeLvl
-            self.plotWindow.waveletType = self.despikeWaveType
-            self.plotWindow.waveletMode = self.despikeWaveMode
+            self.plotWindow.despikeKernel = self.despikeKernel
+            self.plotWindow.despikeThreshold = self.despikeThreshold
+            # self.plotWindow.decompLevel = self.despikeLvl
+            # self.plotWindow.waveletType = self.despikeWaveType
+            # self.plotWindow.waveletMode = self.despikeWaveMode
         else:
             self.plotWindow.despikeOn=False
         
@@ -402,12 +438,12 @@ class dHvAFrame(wx.Frame):
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
-        if self.plotWindow.despikeLength:
-            DespikeMessage = "Reconstructed Wavelet Length Does Not Match the Original. Dropped the extra length elements."
-            DespikeCaption = "Warning"
-            despikeDlg = wx.MessageDialog(self,DespikeMessage,DespikeCaption,wx.OK|wx.ICON_WARNING)
-            despikeDlg.ShowModal()
-            despikeDlg.Destroy()
+        # if self.plotWindow.despikeLength:
+        #     DespikeMessage = "Reconstructed Wavelet Length Does Not Match the Original. Dropped the extra length elements."
+        #     DespikeCaption = "Warning"
+        #     despikeDlg = wx.MessageDialog(self,DespikeMessage,DespikeCaption,wx.OK|wx.ICON_WARNING)
+        #     despikeDlg.ShowModal()
+        #     despikeDlg.Destroy()
         self.FFTPanel.Y = self.plotWindow.windowed_dataY
         self.FFTPanel.delta_inv_x = self.plotWindow.delta_inv_x
         self.FFTPanel.draw()
