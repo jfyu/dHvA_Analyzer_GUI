@@ -435,6 +435,7 @@ class dHvAFrame(wx.Frame):
             #reset the conditions
             self.plotWindow.medianfilterOn=False
             self.plotWindow.waveletOn = False
+            self.plotWindow.despikeLength=False
  
             if self.despikeMethodRadioButton[0].GetValue() == True:
                 self.plotWindow.medianfilterOn = True
