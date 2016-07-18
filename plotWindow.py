@@ -21,7 +21,7 @@ class plotWindow(wx.Window):
         self.InY = np.sin(self.x)
         self.OutY = np.cos(self.x)
         self.phase = 90
-        self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)+self.OutY*np.sin(self.phase*np.pi/180)
+        self.CombinedY = self.InY*np.sin(self.phase*np.pi/180)+self.OutY*np.cos(self.phase*np.pi/180)
         # print "phase is "+str(self.phase)
         # print "inY is multiplied by "+str(np.cos(self.phase*np.pi/180))
         # print "outY is multiplied by "+str(np.sin(self.phase**np.pi/180))
@@ -79,7 +79,7 @@ class plotWindow(wx.Window):
         #print len(self.rawPlot.lines)
         
         #calculate the combined signal
-        self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)+self.OutY*np.sin(self.phase*np.pi/180)
+        self.CombinedY = self.InY*np.sin(self.phase*np.pi/180)+self.OutY*np.cos(self.phase*np.pi/180)
         #print str(self.CombinedY[-1]-self.InY[-1])
         self.rawPlot.plot(self.x,self.InY,linewidth=2,color='blue')
         self.rawPlot.plot(self.x,self.OutY,linewidth=2,color='red')
