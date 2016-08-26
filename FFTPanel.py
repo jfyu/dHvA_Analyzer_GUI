@@ -290,7 +290,10 @@ class FFTPanel(wx.Frame):
         self.ylim[1] = self.yHighLimCtrl.GetValue()
 
     def ClearTable(self,e):
-        print "something"
+        for i in range(0,len(self.Freq_List)):
+            self.Freq_List[i].SetValue(0)
+        for j in range(0,len(self.Calculated_List)):
+            self.Calculated_List[j].SetValue('0')
         # print "number of rows is "+str(self.row)
         # i=1
         # while i<=self.row+1:
