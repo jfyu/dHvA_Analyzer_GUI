@@ -76,8 +76,26 @@ class FFTPanel(wx.Frame):
         #add the grid to display the peaks 
 
         self.tableSizer = wx.BoxSizer(wx.VERTICAL)
-        self.DataTable = CustTableGrid(self)#initially two columns and two rows
-        #self.row = 0 #keep track of how many peaks added
+        EstPeakSizer = wx.GridBagSizer(11,4)
+        EstPeakSizer.Add(wx.StaticText(self,-1,"Est. Freq. "),(0,0))
+        EstPeakSizer.Add(wx.StaticText(self,-1,"Real Freq. "),(0,1))
+        EstPeakSizer.Add(wx.StaticText(self,-1,"Best Phase "),(0,2))
+        EstPeakSizer.Add(wx.StaticText(self,-1,"Best Amp. "),(0,3))
+        #EstPeakSizer.Add(wx.TextCtrl(self),(1,1))
+        self.Freq_List = []
+        self.Calculated_List = []
+        for i in range(0,10):
+            self.Freq_List.append(wx.lib.intctrl.IntCtrl(self,size=(60,-1)))
+            EstPeakSizer.Add(self.Freq_List[-1],(i+1,0))
+            for j in range(1,4):
+                self.Calculated_List.append(wx.TextCtrl(self,-1,"0",size=(60,-1),style=wx.TE_READONLY))
+                self.Calculated_List[-1].SetBackgroundColour('Grey')
+                self.Calculated_List[-1].SetForegroundColour('White')
+                EstPeakSizer.Add(self.Calculated_List[-1],(i+1,j))
+ 
+        #box = wx.BoxSizer()
+                # self.DataTable = CustTableGrid(self)#initially two columns and two rows
+#         #self.row = 0 #keep track of how many peaks added
         #save button
         self.saveButton =wx.Button(self,-1,'Save Data')
         self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
@@ -144,8 +162,11 @@ class FFTPanel(wx.Frame):
         #self.tableSizer.Add(self.ChangeButton,0,wx.EXPAND)
         
         self.tableSizer.Add(LimitBoxSizer,0,wx.EXPAND)
+        self.tableSizer.Add(EstPeakSizer, 1, wx.ALL|wx.EXPAND, 10)
+
+
         #self.tableSizer.Add(self.warningText,0,wx.EXPAND)
-        self.tableSizer.Add(self.DataTable,1,wx.EXPAND)
+        #self.tableSizer.Add(self.DataTable,1,wx.EXPAND)
         self.tableSizer.Add(buttonSizer,0,wx.EXPAND)
         
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -201,15 +222,19 @@ class FFTPanel(wx.Frame):
         picked_x = e.artist.get_xdata()[e.ind[0]]
         picked_y = e.artist.get_ydata()[e.ind[0]]
         print picked_x, picked_y
-        self.row = self.DataTable.table.GetNumberRows()
-        self.DataTable.table.AppendRow()
-        if self.row != 0:
-            for i in range(0,self.row):
-                if self.DataTable.table.IsEmptyCell(i,0)==True:
-                    self.row = i
-                    break
-        self.DataTable.table.SetValue(self.row,0,picked_x)
-        self.DataTable.table.SetValue(self.row,1,picked_y)
+        for i in range(0,len(self.Freq_List)):
+            if self.Freq_List[i].GetValue() == 0:
+                self.Freq_List[i].SetValue(int(picked_x))
+                break
+        # self.row = self.DataTable.table.GetNumberRows()
+        # self.DataTable.table.AppendRow()
+        # if self.row != 0:
+            # for i in range(0,self.row):
+                # if self.DataTable.table.IsEmptyCell(i,0)==True:
+                    # self.row = i
+                    # break
+        # self.DataTable.table.SetValue(self.row,0,picked_x)
+        # self.DataTable.table.SetValue(self.row,1,picked_y)
         #print self.row
         #print self.DataTable.table.AppendRow()
         #print self.DataTable.table.DeleteRow()
@@ -241,7 +266,7 @@ class FFTPanel(wx.Frame):
             #data = [[1,2],[3,4],[5,6]]
             with open(path,'wb') as file:
                 writer=csv.writer(file,delimiter=',')
-                writer.writerows(self.DataTable.table.data)
+                #writer.writerows(self.DataTable.table.data)
         dlg.Destroy()
     
     def OnExit(self,e):
@@ -264,9 +289,10 @@ class FFTPanel(wx.Frame):
         self.ylim[1] = self.yHighLimCtrl.GetValue()
 
     def ClearTable(self,e):
-        print "number of rows is "+str(self.row)
-        i=1
-        while i<=self.row+1:
-            self.DataTable.table.DeleteRow()
-            i=i+1
+        print "something"
+        # print "number of rows is "+str(self.row)
+        # i=1
+        # while i<=self.row+1:
+            # self.DataTable.table.DeleteRow()
+            # i=i+1
    

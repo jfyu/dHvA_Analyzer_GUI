@@ -6,7 +6,7 @@ import netCDF4
 from plotWindow import *
 import dHvA_Util
 from FFTPanel import *
-
+from PeakFindPanel import *
 class dHvAFrame(wx.Frame):
     #"""this creates the frame for the whole program"""
     def __init__(self, *args, **kwargs):
@@ -35,7 +35,6 @@ class dHvAFrame(wx.Frame):
         #setting up the menu
         filemenu=wx.Menu()
         menuOpen = filemenu.Append(wx.ID_OPEN,"OPEN","Open a data file")
-        menuPhaseFind = filemenu.Append(wx.ID_ANY,"Phase Find","Find the optimal phase")
         menuExit = filemenu.Append(wx.ID_EXIT, "EXIT", "Terminate the Program")
 
         #Creating the menu bar and status bar
@@ -47,7 +46,6 @@ class dHvAFrame(wx.Frame):
         #Events for menu
         self.Bind(wx.EVT_MENU, self.OnOpen, menuOpen)
         self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
-        self.Bind(wx.EVT_MENU, self.PhaseFind, menuPhaseFind)
 
         #set up toolbar
         tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
@@ -319,13 +317,7 @@ class dHvAFrame(wx.Frame):
     #def OnSave(self,e):
     #    pass
 
-    def PhaseFind(self,e):
-        for phase in np.arange(0,50,5):
-            self.phase = phase
-            print phase
-            self.applyChanges(self)
-
-
+    
     def setXdata(self,e):
         #try:
         self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
