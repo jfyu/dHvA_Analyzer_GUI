@@ -230,6 +230,7 @@ class FFTPanel(wx.Frame):
         self.FFTPlot.set_ylim(self.ylim)
         #    #self.FFTPlot.autoscale(True,axis='y')
         #    #self.FFTPlot.set_xlim([0,20000])
+        self.repaint()
     def OnSave(self,e):
         dlg = wx.FileDialog(
             self, message="Save file as ...", defaultDir=os.getcwd(), 
