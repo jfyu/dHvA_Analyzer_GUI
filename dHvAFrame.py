@@ -6,7 +6,6 @@ import netCDF4
 from plotWindow import *
 import dHvA_Util
 from FFTPanel import *
-from PeakFindPanel import *
 class dHvAFrame(wx.Frame):
     #"""this creates the frame for the whole program"""
     def __init__(self, *args, **kwargs):

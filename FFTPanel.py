@@ -1,4 +1,5 @@
 import wx
+import wx.lib.intctrl
 #from FFTWindow import * 
 import numpy as np
 import matplotlib
