@@ -170,27 +170,28 @@ class dHvAFrame(wx.Frame):
         #self.despikeMedianBox = wx.StaticBox(self,-1,'Median Filter Method')
         #self.despikeMedianBox_sizer = wx.StaticBoxSizer(self.despikeMedianBox,wx.VERTICAL)
 
-        self.despike_median_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_median_sizer1 = wx.BoxSizer(wx.VERTICAL)
         self.despike_kernel_ctrl = wx.SpinCtrl(self,value='15',min=1,max=100001)
-        self.despike_median_sizer.Add(wx.StaticText(self,-1,'Median Filter Kernel Size (odd integer)'),0,wx.ALIGN_LEFT)
-        self.despike_median_sizer.Add(self.despike_kernel_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+        self.despike_median_sizer1.Add(wx.StaticText(self,-1,'Median Filter Kernel Size (odd integer)  '),0,wx.ALIGN_LEFT)
+        self.despike_median_sizer1.Add(self.despike_kernel_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
 
-        #self.despike_median_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_median_sizer2 = wx.BoxSizer(wx.VERTICAL)
         self.despike_threshold_ctrl = wx.SpinCtrl(self,value='350',min=0,max=1000000)
-        self.despike_median_sizer.Add(wx.StaticText(self,-1,'Spike Threshold (%)'),0,wx.ALIGN_LEFT)
-        self.despike_median_sizer.Add(self.despike_threshold_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+        self.despike_median_sizer2.Add(wx.StaticText(self,-1,'Spike Threshold (%)  '),0,wx.ALIGN_LEFT)
+        self.despike_median_sizer2.Add(self.despike_threshold_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
         
-        #self.despike_median_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_median_sizer3 = wx.BoxSizer(wx.VERTICAL)
         self.despike_repeat_ctrl = wx.SpinCtrl(self,value='12',min=0,max=1000000)
-        self.despike_median_sizer.Add(wx.StaticText(self,-1,'# of passes'),0,wx.ALIGN_LEFT)
-        self.despike_median_sizer.Add(self.despike_repeat_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+        self.despike_median_sizer3.Add(wx.StaticText(self,-1,'# of passes'),0,wx.ALIGN_LEFT)
+        self.despike_median_sizer3.Add(self.despike_repeat_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
         
 
 
 
-        # self.despike_median_sizer = wx.boxsizer(wx.horizontal)
-        # self.despike_median_sizer.add(self.despike_median_sizer1,0,wx.expand)
-        # self.despike_median_sizer.add(self.despike_median_sizer2,0,wx.expand)
+        self.despike_median_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_median_sizer.Add(self.despike_median_sizer1,0,wx.ALIGN_LEFT)
+        self.despike_median_sizer.Add(self.despike_median_sizer2,0,wx.ALIGN_LEFT)
+        self.despike_median_sizer.Add(self.despike_median_sizer3,0,wx.ALIGN_LEFT)
 
         #self.despikeMedianBox_sizer.Add(self.despike_median_sizer,0,wx.EXPAND)
         # for wavelet filtering
