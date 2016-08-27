@@ -20,11 +20,12 @@ class dHvAFrame(wx.Frame):
         self.phase = 0
         self.xmin = 0
         self.xmax = 16
-        self.despikeKernel = 3
-        self.despikeThreshold = 100
-        self.despikeLvl = 2
-        self.despikeWaveType = 'coif2'
-        self.despikeWaveMode = 'sym'
+        self.despikeKernel = 15
+        self.despikeThreshold = 350
+        self.despikeRepeat = 12
+        # self.despikeLvl = 2
+        # self.despikeWaveType = 'coif2'
+        # self.despikeWaveMode = 'sym'
         self.smoothWinType = 'hamming'
         self.winlens = 30
         #same initialization as wx.Frame
@@ -152,78 +153,88 @@ class dHvAFrame(wx.Frame):
         self.polyBox_sizer.Add(self.polyOrder_sizer,0,wx.EXPAND)
 
         #despike 
-        self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default OFF)')
+        self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default ON)')
         self.despikeBox_sizer = wx.StaticBoxSizer(self.despikeBox,wx.VERTICAL)
 
         self.despikeButton = wx.CheckBox(self,-1,'ON')
-        self.despikeButton.SetValue(False)
+        self.despikeButton.SetValue(True)
 
-        self.despike_method_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.despikeMethodRadioButton=[]
-        self.despikeMethodRadioButton.append(wx.RadioButton(self,-1,'Median Filter Method',style=wx.RB_GROUP))
-        self.despike_method_sizer.Add(self.despikeMethodRadioButton[0],1,wx.EXPAND|wx.ALIGN_CENTER)
-        self.despikeMethodRadioButton.append(wx.RadioButton(self,-1,'Wavelet Filter Method'))
-        self.despike_method_sizer.Add(self.despikeMethodRadioButton[1],1,wx.EXPAND|wx.ALIGN_CENTER)
-        self.despikeMethodRadioButton[0].SetValue(True)
+        # self.despike_method_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # self.despikeMethodRadioButton=[]
+        # self.despikeMethodRadioButton.append(wx.RadioButton(self,-1,'Median Filter Method',style=wx.RB_GROUP))
+        # self.despike_method_sizer.Add(self.despikeMethodRadioButton[0],1,wx.EXPAND|wx.ALIGN_CENTER)
+        # self.despikeMethodRadioButton.append(wx.RadioButton(self,-1,'Wavelet Filter Method'))
+        # self.despike_method_sizer.Add(self.despikeMethodRadioButton[1],1,wx.EXPAND|wx.ALIGN_CENTER)
+        # self.despikeMethodRadioButton[0].SetValue(True)
 
-        self.despikeMedianBox = wx.StaticBox(self,-1,'Median Filter Method')
-        self.despikeMedianBox_sizer = wx.StaticBoxSizer(self.despikeMedianBox,wx.VERTICAL)
-
-        self.despike_median_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.despike_kernel_ctrl = wx.SpinCtrl(self,value='3',min=1,max=100001)
-        self.despike_median_sizer1.Add(wx.StaticText(self,-1,'Median Filter Kernel Size (odd integer)'),0,wx.ALIGN_LEFT)
-        self.despike_median_sizer1.Add(self.despike_kernel_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
-
-        self.despike_median_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        self.despike_threshold_ctrl = wx.SpinCtrl(self,value='100',min=0,max=1000000)
-        self.despike_median_sizer2.Add(wx.StaticText(self,-1,'Spike Threshold (%)'),0,wx.ALIGN_LEFT)
-        self.despike_median_sizer2.Add(self.despike_threshold_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+        #self.despikeMedianBox = wx.StaticBox(self,-1,'Median Filter Method')
+        #self.despikeMedianBox_sizer = wx.StaticBoxSizer(self.despikeMedianBox,wx.VERTICAL)
 
         self.despike_median_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.despike_median_sizer.Add(self.despike_median_sizer1,0,wx.EXPAND)
-        self.despike_median_sizer.Add(self.despike_median_sizer2,0,wx.EXPAND)
+        self.despike_kernel_ctrl = wx.SpinCtrl(self,value='15',min=1,max=100001)
+        self.despike_median_sizer.Add(wx.StaticText(self,-1,'Median Filter Kernel Size (odd integer)'),0,wx.ALIGN_LEFT)
+        self.despike_median_sizer.Add(self.despike_kernel_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
 
-        self.despikeMedianBox_sizer.Add(self.despike_median_sizer,0,wx.EXPAND)
-        # for wavelet filtering
-        self.despikeWaveletBox = wx.StaticBox(self,-1,'Wavelet Filter Method')
-        self.despikeWaveletBox_sizer = wx.StaticBoxSizer(self.despikeWaveletBox,wx.VERTICAL)
-
-        self.despike_wavelet_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        self.despike_lvls_ctrl = wx.SpinCtrl(self,value='2',min=0,max=10)
-        self.despike_wavelet_sizer1.Add(wx.StaticText(self,-1,'Wavelet Filter Level'),0,wx.ALIGN_LEFT)
-        self.despike_wavelet_sizer1.Add(self.despike_lvls_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
-
-        self.despike_wavelet_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        wavelet_names = ['haar','coif1', 'coif2', 'coif3', 'coif4', 'coif5'] #use one family
-        self.despike_type_ctrl = wx.ComboBox(self,choices=wavelet_names,style=wx.CB_READONLY)
-        self.despike_type_ctrl.SetValue('coif2')
-        self.despike_wavelet_sizer2.Add(wx.StaticText(self,-1,'Wavelet Type'),0,wx.EXPAND | wx.ALIGN_LEFT)
-        self.despike_wavelet_sizer2.Add(self.despike_type_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
-
-        self.despike_wavelet_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
-        wavelet_modes = ['sym','zpd','cpd','ppd','sp1','per']#for definitions see pywavelet documentation
-        self.despike_mode_ctrl = wx.ComboBox(self,choices=wavelet_modes,style=wx.CB_READONLY)
-        self.despike_mode_ctrl.SetValue('sym')
-        self.despike_wavelet_sizer3.Add(wx.StaticText(self,-1,'Signal Extension Modes'),0,wx.EXPAND | wx.ALIGN_LEFT)
-        self.despike_wavelet_sizer3.Add(self.despike_mode_ctrl,1,wx.EXPAND|wx.ALIGN_LEFT)
+        #self.despike_median_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_threshold_ctrl = wx.SpinCtrl(self,value='350',min=0,max=1000000)
+        self.despike_median_sizer.Add(wx.StaticText(self,-1,'Spike Threshold (%)'),0,wx.ALIGN_LEFT)
+        self.despike_median_sizer.Add(self.despike_threshold_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
         
-        #self.despikeWaveletBoxsizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.despikeWaveletBox_sizer.Add(self.despike_wavelet_sizer1,0,wx.EXPAND)
-        self.despikeWaveletBox_sizer.Add(self.despike_wavelet_sizer2,0,wx.EXPAND)
-        self.despikeWaveletBox_sizer.Add(self.despike_wavelet_sizer3,0,wx.EXPAND)
+        #self.despike_median_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
+        self.despike_repeat_ctrl = wx.SpinCtrl(self,value='12',min=0,max=1000000)
+        self.despike_median_sizer.Add(wx.StaticText(self,-1,'# of passes'),0,wx.ALIGN_LEFT)
+        self.despike_median_sizer.Add(self.despike_repeat_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+        
+
+
+
+        # self.despike_median_sizer = wx.boxsizer(wx.horizontal)
+        # self.despike_median_sizer.add(self.despike_median_sizer1,0,wx.expand)
+        # self.despike_median_sizer.add(self.despike_median_sizer2,0,wx.expand)
+
+        #self.despikeMedianBox_sizer.Add(self.despike_median_sizer,0,wx.EXPAND)
+        # for wavelet filtering
+        # self.despikeWaveletBox = wx.StaticBox(self,-1,'Wavelet Filter Method')
+        # self.despikeWaveletBox_sizer = wx.StaticBoxSizer(self.despikeWaveletBox,wx.VERTICAL)
+
+        # self.despike_wavelet_sizer1 = wx.BoxSizer(wx.HORIZONTAL)
+        # self.despike_lvls_ctrl = wx.SpinCtrl(self,value='2',min=0,max=10)
+        # self.despike_wavelet_sizer1.Add(wx.StaticText(self,-1,'Wavelet Filter Level'),0,wx.ALIGN_LEFT)
+        # self.despike_wavelet_sizer1.Add(self.despike_lvls_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+
+        # self.despike_wavelet_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        # wavelet_names = ['haar','coif1', 'coif2', 'coif3', 'coif4', 'coif5'] #use one family
+        # self.despike_type_ctrl = wx.ComboBox(self,choices=wavelet_names,style=wx.CB_READONLY)
+        # self.despike_type_ctrl.SetValue('coif2')
+        # self.despike_wavelet_sizer2.Add(wx.StaticText(self,-1,'Wavelet Type'),0,wx.EXPAND | wx.ALIGN_LEFT)
+        # self.despike_wavelet_sizer2.Add(self.despike_type_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
+
+        # self.despike_wavelet_sizer3 = wx.BoxSizer(wx.HORIZONTAL)
+        # wavelet_modes = ['sym','zpd','cpd','ppd','sp1','per']#for definitions see pywavelet documentation
+        # self.despike_mode_ctrl = wx.ComboBox(self,choices=wavelet_modes,style=wx.CB_READONLY)
+        # self.despike_mode_ctrl.SetValue('sym')
+        # self.despike_wavelet_sizer3.Add(wx.StaticText(self,-1,'Signal Extension Modes'),0,wx.EXPAND | wx.ALIGN_LEFT)
+        # self.despike_wavelet_sizer3.Add(self.despike_mode_ctrl,1,wx.EXPAND|wx.ALIGN_LEFT)
+        
+        # #self.despikeWaveletBoxsizer = wx.BoxSizer(wx.HORIZONTAL)
+        # self.despikeWaveletBox_sizer.Add(self.despike_wavelet_sizer1,0,wx.EXPAND)
+        # self.despikeWaveletBox_sizer.Add(self.despike_wavelet_sizer2,0,wx.EXPAND)
+        # self.despikeWaveletBox_sizer.Add(self.despike_wavelet_sizer3,0,wx.EXPAND)
 
         self.despikeBox_sizer.Add(self.despikeButton,0,wx.ALIGN_LEFT)
-        self.despikeBox_sizer.Add(self.despike_method_sizer,0,wx.EXPAND)
-        self.despikeBox_sizer.Add(self.despikeMedianBox_sizer,0,wx.EXPAND)
-        self.despikeBox_sizer.Add(self.despikeWaveletBox_sizer,0,wx.EXPAND)
+        self.despikeBox_sizer.Add(self.despike_median_sizer,0,wx.EXPAND)
+        #self.despikeBox_sizer.Add(self.despike_method_sizer,0,wx.EXPAND)
+        #self.despikeBox_sizer.Add(self.despikeMedianBox_sizer,0,wx.EXPAND)
+        #self.despikeBox_sizer.Add(self.despikeWaveletBox_sizer,0,wx.EXPAND)
         #self.despikeBox_sizer.Add(self.despike_sizer,0,wx.EXPAND)
 
         #despike events
         self.Bind(wx.EVT_SPINCTRL,self.despikeKernel_value, self.despike_kernel_ctrl)
         self.Bind(wx.EVT_SPINCTRL,self.despikeThreshold_value, self.despike_threshold_ctrl)
-        self.Bind(wx.EVT_SPINCTRL,self.despikeLevel,self.despike_lvls_ctrl)
-        self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
-        self.Bind(wx.EVT_SPINCTRL,self.despikeMode,self.despike_mode_ctrl)
+        self.Bind(wx.EVT_SPINCTRL,self.despikeRepeatFunction,self.despike_repeat_ctrl)
+        # self.Bind(wx.EVT_SPINCTRL,self.despikeLevel,self.despike_lvls_ctrl)
+        # self.Bind(wx.EVT_SPINCTRL,self.despikeType,self.despike_type_ctrl)
+        # self.Bind(wx.EVT_SPINCTRL,self.despikeMode,self.despike_mode_ctrl)
 
         #Smooth, Interpolate and FFT controls
         self.smoothFFTBox = wx.StaticBox(self,-1,'Smooth (default OFF) and Windowing (default ON)')
@@ -423,15 +434,18 @@ class dHvAFrame(wx.Frame):
     def despikeThreshold_value(self,e):
         self.despikeThreshold = self.despike_threshold_ctrl.GetValue()
 
+    def despikeRepeatFunction(self,e):
+        self.despikeRepeat = self.despike_repeat_ctrl.GetValue()
+
     #for wavelet filter
-    def despikeLevel(self,e):
-        self.despikeLvl=self.despike_lvls_ctrl.GetValue()
+    # def despikeLevel(self,e):
+        # self.despikeLvl=self.despike_lvls_ctrl.GetValue()
 
-    def despikeType(self,e):
-        self.despikeWaveType = self.despike_type_ctrl.GetValue()
+    # def despikeType(self,e):
+        # self.despikeWaveType = self.despike_type_ctrl.GetValue()
 
-    def despikeMode(self,e):
-        self.despikeWaveMode = self.despike_mode_ctrl.GetValue()
+    # def despikeMode(self,e):
+        # self.despikeWaveMode = self.despike_mode_ctrl.GetValue()
     
     def smoothType(self,e):
         self.smoothWinType = self.smoothFFT_winCtrl.GetValue()
@@ -474,19 +488,20 @@ class dHvAFrame(wx.Frame):
             self.plotWindow.despikeOn = True
 
             #reset the conditions
-            self.plotWindow.medianfilterOn=False
-            self.plotWindow.waveletOn = False
-            self.plotWindow.despikeLength=False
+            # self.plotWindow.medianfilterOn=False
+            # self.plotWindow.waveletOn = False
+            # self.plotWindow.despikeLength=False
  
-            if self.despikeMethodRadioButton[0].GetValue() == True:
-                self.plotWindow.medianfilterOn = True
-                self.plotWindow.despikeKernel = self.despikeKernel
-                self.plotWindow.despikeThreshold = self.despikeThreshold
-            elif self.despikeMethodRadioButton[1].GetValue() == True:
-                self.plotWindow.waveletOn = True
-                self.plotWindow.decompLevel = self.despikeLvl
-                self.plotWindow.waveletType = self.despikeWaveType
-                self.plotWindow.waveletMode = self.despikeWaveMode
+            #if self.despikeMethodRadioButton[0].GetValue() == True:
+            #self.plotWindow.medianfilterOn = True
+            self.plotWindow.despikeKernel = self.despikeKernel
+            self.plotWindow.despikeThreshold = self.despikeThreshold
+            self.plotWindow.despikeRepeat = self.despikeRepeat
+           #  elif self.despikeMethodRadioButton[1].GetValue() == True:
+                # self.plotWindow.waveletOn = True
+                # self.plotWindow.decompLevel = self.despikeLvl
+                # self.plotWindow.waveletType = self.despikeWaveType
+                # self.plotWindow.waveletMode = self.despikeWaveMode
         else:
             self.plotWindow.despikeOn=False
                    
@@ -510,12 +525,12 @@ class dHvAFrame(wx.Frame):
         #self.plotWindow.xmax=self.xmax
         self.plotWindow.draw()
         self.plotWindow.repaint()
-        if self.plotWindow.despikeLength:
-            DespikeMessage = "Reconstructed Wavelet Length Does Not Match the Original. Dropped the extra length elements."
-            DespikeCaption = "Warning"
-            despikeDlg = wx.MessageDialog(self,DespikeMessage,DespikeCaption,wx.OK|wx.ICON_WARNING)
-            despikeDlg.ShowModal()
-            despikeDlg.Destroy()
+        # if self.plotWindow.despikeLength:
+            # DespikeMessage = "Reconstructed Wavelet Length Does Not Match the Original. Dropped the extra length elements."
+            # DespikeCaption = "Warning"
+            # despikeDlg = wx.MessageDialog(self,DespikeMessage,DespikeCaption,wx.OK|wx.ICON_WARNING)
+            # despikeDlg.ShowModal()
+            # despikeDlg.Destroy()
         self.FFTPanel.Y = self.plotWindow.windowed_dataY
         self.FFTPanel.delta_inv_x = self.plotWindow.delta_inv_x
         self.FFTPanel.draw()
