@@ -327,10 +327,14 @@ class dHvAFrame(wx.Frame):
                 warningDlg3.ShowModal()
                 warningDlg3.Destroy()
         else:
+            progressDlg = wx.ProgressDialog("Auto Phase Progress","Auto Phase Engaged, Working...",maximum = 175,parent = self,style = 0 | wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME |wx.PD_AUTO_HIDE )
             max_signal = []
             for i in range(0,len(self.FFTPanel.Freq_List)):
                 max_signal.append(0)
             for phase_tmp in np.arange(0,180,5):
+                wx.MilliSleep(250)
+                wx.Yield()
+                progressDlg.Update(phase_tmp)
                 self.phase = phase_tmp
                 self.applyChanges(self)
                 fft_freq = self.FFTPanel.FreqY
@@ -352,7 +356,8 @@ class dHvAFrame(wx.Frame):
                             self.FFTPanel.Calculated_List[i*3+1].SetValue(str(phase_tmp))
                             #set Best Amp
                             self.FFTPanel.Calculated_List[i*3+2].SetValue('%.3e' % max_signal[i])
-    
+                        self.phase_Ctrl.SetValue(175)
+            progressDlg.Destroy() 
     def setXdata(self,e):
         #try:
         self.xdata = self.vardict[self.Data_comboBox[0].GetValue()]
