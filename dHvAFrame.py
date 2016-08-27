@@ -344,7 +344,7 @@ class dHvAFrame(wx.Frame):
                         freq_tmp, signal_tmp = dHvA_Util.select_data_one(fft_freq,fft_Signal,range_min,range_max)
                         ind = np.argmax(np.array(signal_tmp))
                         if signal_tmp[ind] > max_signal[i]:
-                            print str(signal_tmp[ind])+'max signal is '+str(max_signal[i])
+                            #print str(signal_tmp[ind])+'max signal is '+str(max_signal[i])
                             max_signal[i] = signal_tmp[ind]
                             #Set Real Frequency
                             self.FFTPanel.Calculated_List[i*3].SetValue(str(int(freq_tmp[ind])))
@@ -516,6 +516,7 @@ class dHvAFrame(wx.Frame):
         self.FFTPanel.draw()
         #self.FFTPanel.repaint()
         self.FFTPanel.repaint()
+        self.FFTPanel.Show(True)
 
 
 
