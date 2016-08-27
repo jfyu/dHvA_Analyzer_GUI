@@ -25,7 +25,7 @@ class FFTPanel(wx.Frame):
 
         #menu
         filemenu=wx.Menu()
-        menuSave = filemenu.Append(wx.ID_SAVE,"SAVE","Save a data file")
+        #menuSave = filemenu.Append(wx.ID_SAVE,"SAVE","Save a data file")
         menuExit = filemenu.Append(wx.ID_EXIT, "EXIT", "Terminate the Program")
 
         #plotmenu=wx.Menu()
@@ -39,7 +39,7 @@ class FFTPanel(wx.Frame):
         #self.CreateStatusBar()
         
         #Events for menu
-        self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
+        #self.Bind(wx.EVT_MENU, self.OnSave, menuSave)
         self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
         #self.Bind(wx.EVT_MENU, self.ChangeLimit,menuLim)
 
@@ -86,10 +86,10 @@ class FFTPanel(wx.Frame):
         self.Freq_List = []
         self.Calculated_List = []
         for i in range(0,10):
-            self.Freq_List.append(wx.lib.intctrl.IntCtrl(self,size=(60,-1)))
+            self.Freq_List.append(wx.lib.intctrl.IntCtrl(self,value = 0,size=(100,-1)))
             EstPeakSizer.Add(self.Freq_List[-1],(i+1,0))
             for j in range(1,4):
-                self.Calculated_List.append(wx.TextCtrl(self,-1,"0",size=(60,-1),style=wx.TE_READONLY))
+                self.Calculated_List.append(wx.TextCtrl(self,-1,"0",size=(100,-1),style=wx.TE_READONLY))
                 self.Calculated_List[-1].SetBackgroundColour('Grey')
                 self.Calculated_List[-1].SetForegroundColour('White')
                 EstPeakSizer.Add(self.Calculated_List[-1],(i+1,j))
@@ -98,15 +98,15 @@ class FFTPanel(wx.Frame):
                 # self.DataTable = CustTableGrid(self)#initially two columns and two rows
 #         #self.row = 0 #keep track of how many peaks added
         #save button
-        self.saveButton =wx.Button(self,-1,'Save Data')
-        self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
+        # self.saveButton =wx.Button(self,-1,'Save Data')
+        # self.Bind(wx.EVT_BUTTON,self.OnSave,self.saveButton)
         #clear table button
         self.clearButton=wx.Button(self,-1,'Clear Table')
         self.Bind(wx.EVT_BUTTON,self.ClearTable,self.clearButton)
-
+        
         #Button Sizer
         buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        buttonSizer.Add(self.saveButton,0,wx.ALIGN_CENTRE|wx.ALL|wx.EXPAND)
+        # buttonSizer.Add(self.saveButton,0,wx.ALIGN_CENTRE|wx.ALL|wx.EXPAND)
         buttonSizer.Add(self.clearButton,0,wx.ALIGN_CENTRE|wx.ALL|wx.EXPAND)
         #Change Size Controls`
         LimitBox = wx.StaticBox(self,-1,"Change x-axis Limits")

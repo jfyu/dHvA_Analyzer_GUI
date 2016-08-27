@@ -258,11 +258,14 @@ class dHvAFrame(wx.Frame):
        
         #Apply button
         self.applyButton = wx.Button(self,wx.ID_APPLY)
+        self.PhaseFinderButton = wx.Button(self,-1,'Auto Phase')
         self.buttonSizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.buttonSizer.Add(self.applyButton,0,wx.ALIGN_RIGHT)
+        self.buttonSizer.Add(self.applyButton,0,wx.ALIGN_CENTER)
+        self.buttonSizer.Add(self.PhaseFinderButton,0,wx.ALIGN_CENTER)
 
         #Apply button events
         self.Bind(wx.EVT_BUTTON,self.applyChanges,self.applyButton)
+        self.Bind(wx.EVT_BUTTON,self.AutoPhase,self.PhaseFinderButton)
         
         #set up nested control sizers
         self.ctrlSizer = wx.BoxSizer(wx.VERTICAL)
@@ -316,6 +319,39 @@ class dHvAFrame(wx.Frame):
     #def OnSave(self,e):
     #    pass
 
+    def AutoPhase(self,e):
+        if self.FFTPanel.Freq_List[0].GetValue() == 0:
+                message3 = "You have not chosen a peak yet! Click on a peak in FFT Panel"
+                caption2 = "Error!"
+                warningDlg3 = wx.MessageDialog(self,message3,caption2,wx.OK|wx.ICON_ERROR)
+                warningDlg3.ShowModal()
+                warningDlg3.Destroy()
+        else:
+            max_signal = []
+            for i in range(0,len(self.FFTPanel.Freq_List)):
+                max_signal.append(0)
+            for phase_tmp in np.arange(0,180,5):
+                self.phase = phase_tmp
+                self.applyChanges(self)
+                fft_freq = self.FFTPanel.FreqY
+                fft_Signal = self.FFTPanel.FFT_SignalY
+                for i in range(0,len(self.FFTPanel.Freq_List)):
+                    if self.FFTPanel.Freq_List[i].GetValue()==0:
+                        break
+                    else:
+                        range_min = self.FFTPanel.Freq_List[i].GetValue()-50 #within 50T on either side 
+                        range_max = self.FFTPanel.Freq_List[i].GetValue()+50
+                        freq_tmp, signal_tmp = dHvA_Util.select_data_one(fft_freq,fft_Signal,range_min,range_max)
+                        ind = np.argmax(np.array(signal_tmp))
+                        if signal_tmp[ind] > max_signal[i]:
+                            print str(signal_tmp[ind])+'max signal is '+str(max_signal[i])
+                            max_signal[i] = signal_tmp[ind]
+                            #Set Real Frequency
+                            self.FFTPanel.Calculated_List[i*3].SetValue(str(int(freq_tmp[ind])))
+                            #Set Best Phase
+                            self.FFTPanel.Calculated_List[i*3+1].SetValue(str(phase_tmp))
+                            #set Best Amp
+                            self.FFTPanel.Calculated_List[i*3+2].SetValue('%.3e' % max_signal[i])
     
     def setXdata(self,e):
         #try:
