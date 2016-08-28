@@ -348,6 +348,7 @@ class dHvAFrame(wx.Frame):
                 wx.Yield()
                 progressDlg.Update(phase_tmp)
                 self.phase = phase_tmp
+                self.phase_Ctrl.SetValue(phase_tmp)
                 self.applyChanges(self)
                 fft_freq = self.FFTPanel.FreqY
                 fft_Signal = self.FFTPanel.FFT_SignalY
@@ -368,7 +369,6 @@ class dHvAFrame(wx.Frame):
                             self.FFTPanel.Calculated_List[i*3+1].SetValue(str(phase_tmp))
                             #set Best Amp
                             self.FFTPanel.Calculated_List[i*3+2].SetValue('%.3e' % max_signal[i])
-                        self.phase_Ctrl.SetValue(175)
             progressDlg.Destroy() 
     def setXdata(self,e):
         #try:

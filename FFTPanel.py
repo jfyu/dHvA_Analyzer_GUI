@@ -252,6 +252,10 @@ class FFTPanel(wx.Frame):
         #    print dlg.ylim[1]
         print self.xlim
         print self.ylim
+        self.xlim[0] = self.xLowLimCtrl.GetValue()
+        self.xlim[1] = self.xHighLimCtrl.GetValue()
+        self.ylim[0]=self.yLowLimCtrl.GetValue()
+        self.ylim[1] = self.yHighLimCtrl.GetValue()
         self.FFTPlot.set_xlim(self.xlim)
         self.FFTPlot.set_ylim(self.ylim)
         #    #self.FFTPlot.autoscale(True,axis='y')

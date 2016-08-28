@@ -137,7 +137,7 @@ class plotWindow(wx.Window):
             #if self.medianfilterOn == True:
             count = 0
             while count < self.despikeRepeat:
-                print count
+                #print count
                 self.despikeY = self.noBG_Y
                 #print str(self.despikeKernel)
                 self.despikeY_tmp = signal.medfilt(self.noBG_Y,self.despikeKernel)
