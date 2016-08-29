@@ -9,7 +9,6 @@ from matplotlib.backends.backend_wx import NavigationToolbar2Wx
 from matplotlib.figure import Figure
 from matplotlib.widgets import Cursor
 import dHvA_Util
-from CustomDataTable import *
 import os
 import csv
 #from PlotDialog import *
