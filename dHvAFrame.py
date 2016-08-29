@@ -48,15 +48,15 @@ class dHvAFrame(wx.Frame):
         self.Bind(wx.EVT_MENU, self.OnExit, menuExit)
 
         #set up toolbar
-        tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
+        #tb = self.CreateToolBar(wx.TB_HORIZONTAL | wx.NO_BORDER | wx.TB_FLAT)
         tsize = (24,24)
         open_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, tsize)
         #save_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_SAVE, wx.ART_TOOLBAR,tsize)
-        tb.SetToolBitmapSize(tsize)
+        #tb.SetToolBitmapSize(tsize)
 
         #Events on toolbar
-        tb.AddLabelTool(10,'Open',open_bmp)
-        self.Bind(wx.EVT_TOOL,self.OnOpen,id=10)
+        #tb.AddLabelTool(10,'Open',open_bmp)
+        #self.Bind(wx.EVT_TOOL,self.OnOpen,id=10)
 
         #tb.AddLabelTool(20,'Save',save_bmp)
         #self.Bind(wx.EVT_TOOL,self.OnSave,id=20)
@@ -68,9 +68,17 @@ class dHvAFrame(wx.Frame):
         #sizer for file
         self.fileBox = wx.StaticBox(self,-1,'File Name')
         self.fileBox_sizer = wx.StaticBoxSizer(self.fileBox,wx.VERTICAL)
+
+        tsize = (24,24)
+        open_bmp = wx.ArtProvider.GetBitmap(wx.ART_FILE_OPEN, wx.ART_TOOLBAR, tsize)
+        self.openButton = wx.BitmapButton(self,bitmap=open_bmp)
+        self.Bind(wx.EVT_BUTTON,self.OnOpen,self.openButton)
         
         self.fileNameCtrl = wx.TextCtrl(self,-1,'None',style=wx.TE_READONLY)
-        self.fileBox_sizer.Add(self.fileNameCtrl,1,wx.EXPAND|wx.ALIGN_CENTER)
+        self.fileBox_sizer2 = wx.BoxSizer(wx.HORIZONTAL)
+        self.fileBox_sizer2.Add(self.fileNameCtrl,1,wx.EXPAND|wx.ALIGN_LEFT)
+        self.fileBox_sizer2.Add(self.openButton,0,wx.EXPAND|wx.ALIGN_LEFT)
+        self.fileBox_sizer.Add(self.fileBox_sizer2,1,wx.EXPAND|wx.ALIGN_CENTER)
 
         #Sizers for the comboBoxes 
         self.comboBox_box = wx.StaticBox(self,-1,'Select Data Arrays')
