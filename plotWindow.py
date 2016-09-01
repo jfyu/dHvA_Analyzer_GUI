@@ -38,7 +38,7 @@ class plotWindow(wx.Window):
         #self.decompLevel = 2
        # self.waveletType = 'coif2'
        # self.waveletMode = 'sym'
-        self.despikeOn = True
+        self.despikeOn = False
         #self.medianfilterOn = False
        # self.waveletOn = False
        # self.despikeLength = False

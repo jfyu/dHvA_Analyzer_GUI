@@ -161,11 +161,11 @@ class dHvAFrame(wx.Frame):
         self.polyBox_sizer.Add(self.polyOrder_sizer,0,wx.EXPAND)
 
         #despike 
-        self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default ON)')
+        self.despikeBox = wx.StaticBox(self,-1,'Remove Spike (default OFF)')
         self.despikeBox_sizer = wx.StaticBoxSizer(self.despikeBox,wx.VERTICAL)
 
         self.despikeButton = wx.CheckBox(self,-1,'ON')
-        self.despikeButton.SetValue(True)
+        self.despikeButton.SetValue(False)
 
         # self.despike_method_sizer = wx.BoxSizer(wx.HORIZONTAL)
         # self.despikeMethodRadioButton=[]
