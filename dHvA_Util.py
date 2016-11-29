@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import count,izip
-import pywt
+#import pywt
 from scipy.interpolate import interp1d,InterpolatedUnivariateSpline
 from numpy import arange,array,average,diff,sqrt,take,argsort,sort,transpose,ones,add
 
@@ -90,60 +90,60 @@ def smooth(x,window_len=11,window='hamming'):
     
     return y[window_len:-window_len+1]
 
-def find_angle(A1X,A1Y):
-    ratio = A1X[-1]/A1Y[-1]
-    ratio = -1*ratio
-    calc_theta_deg = np.arctan(ratio)*180/np.pi
-    temp_theta=[]
-    temp_value=[]
-    for index in range(int(round(calc_theta_deg - 10,0)), int(round(calc_theta_deg + 10,0)),1):
-        theta_deg = index
-        theta_rad = np.pi*theta_deg/180
-        UnSortSignalA = A1X*np.cos(theta_rad)+A1Y*np.sin(theta_rad)
-        result = np.average(abs(UnSortSignalA))
-        temp_value = np.append(temp_value,result)
-        temp_theta = np.append(temp_theta,theta_deg)
-        #print(result,theta_deg)
+# def find_angle(A1X,A1Y):
+    # ratio = A1X[-1]/A1Y[-1]
+    # ratio = -1*ratio
+    # calc_theta_deg = np.arctan(ratio)*180/np.pi
+    # temp_theta=[]
+    # temp_value=[]
+    # for index in range(int(round(calc_theta_deg - 10,0)), int(round(calc_theta_deg + 10,0)),1):
+        # theta_deg = index
+        # theta_rad = np.pi*theta_deg/180
+        # UnSortSignalA = A1X*np.cos(theta_rad)+A1Y*np.sin(theta_rad)
+        # result = np.average(abs(UnSortSignalA))
+        # temp_value = np.append(temp_value,result)
+        # temp_theta = np.append(temp_theta,theta_deg)
+        # #print(result,theta_deg)
 
-    min_value,min_index = min(izip(temp_value,count()))
-    #print(min_value,min_index)
-    #Something wonky here. Phase is totally wrong. Try to remove 90 degree shift.
-    #theta_deg = temp_theta[min_index]
-    #theta_deg = temp_theta[min_index] + 90
-    theta_deg = 0
-    theta_rad = np.pi*theta_deg/180
-    UnSortSignalA = A1X*np.cos(theta_rad)+A1Y*np.sin(theta_rad)
-    UnSortSignalAY = A1Y
-    #Try this instead of phase.
-    #UnSortSignalA = np.sqrt(A1X**2 + A1Y**2)
+    # min_value,min_index = min(izip(temp_value,count()))
+    # #print(min_value,min_index)
+    # #Something wonky here. Phase is totally wrong. Try to remove 90 degree shift.
+    # #theta_deg = temp_theta[min_index]
+    # #theta_deg = temp_theta[min_index] + 90
+    # theta_deg = 0
+    # theta_rad = np.pi*theta_deg/180
+    # UnSortSignalA = A1X*np.cos(theta_rad)+A1Y*np.sin(theta_rad)
+    # UnSortSignalAY = A1Y
+    # #Try this instead of phase.
+    # #UnSortSignalA = np.sqrt(A1X**2 + A1Y**2)
     
-    #print(theta_deg)
-    return UnSortSignalA,UnSortSignalAY
+    # #print(theta_deg)
+    # return UnSortSignalA,UnSortSignalAY
 
-def wavelet_filter(A1X, decomp_lev, type, mode):
-    if isinstance(decomp_lev, int) and decomp_lev > 0:
-        #print(pywt.wavelist('bior'))
-        decomp = pywt.wavedec(A1X[:], type, mode=mode,level=decomp_lev)
+# def wavelet_filter(A1X, decomp_lev, type, mode): #uses pywt package, make sure to install/import that
+    # if isinstance(decomp_lev, int) and decomp_lev > 0:
+        # #print(pywt.wavelist('bior'))
+        # decomp = pywt.wavedec(A1X[:], type, mode=mode,level=decomp_lev)
       
-        sigma_j = np.median(abs(decomp[-1]))/0.6745
-        threshold_j = sigma_j*np.sqrt(2*np.log(len(A1X)))
+        # sigma_j = np.median(abs(decomp[-1]))/0.6745
+        # threshold_j = sigma_j*np.sqrt(2*np.log(len(A1X)))
     
-        for i in range(decomp_lev):
-            decomp[i + 1] = pywt.thresholding.less(decomp[i+1],threshold_j)
-            decomp[i + 1] = pywt.thresholding.greater(decomp[i+1],-threshold_j)
+        # for i in range(decomp_lev):
+            # decomp[i + 1] = pywt.thresholding.less(decomp[i+1],threshold_j)
+            # decomp[i + 1] = pywt.thresholding.greater(decomp[i+1],-threshold_j)
         
-        filt_A1X = pywt.waverec(decomp, type,mode=mode)
-        #if len(filt_A1X)!= len(A1X):
-        #    print 'Reconstructed Wavelet Length does not match'
-        #    print 'Reconstructed wavelet length is '+str(len(filt_A1X))
-        #    print 'original length is '+str(len(A1X))
-        #    print 'return the original array'
-        #    return A1X
-        #else:
-        return filt_A1X
+        # filt_A1X = pywt.waverec(decomp, type,mode=mode)
+        # #if len(filt_A1X)!= len(A1X):
+        # #    print 'Reconstructed Wavelet Length does not match'
+        # #    print 'Reconstructed wavelet length is '+str(len(filt_A1X))
+        # #    print 'original length is '+str(len(A1X))
+        # #    print 'return the original array'
+        # #    return A1X
+        # #else:
+        # return filt_A1X
         
-    else:
-        print('invalid')
+    # else:
+        # print('invalid')
 
 def next_pow_2(N):
     #used to define number of points in the interpolation

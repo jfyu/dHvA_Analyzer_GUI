@@ -179,17 +179,17 @@ class dHvAFrame(wx.Frame):
         #self.despikeMedianBox_sizer = wx.StaticBoxSizer(self.despikeMedianBox,wx.VERTICAL)
 
         self.despike_median_sizer1 = wx.BoxSizer(wx.VERTICAL)
-        self.despike_kernel_ctrl = wx.SpinCtrl(self,value='15',min=1,max=100001)
+        self.despike_kernel_ctrl = wx.SpinCtrl(self,value='11',min=1,max=100001)
         self.despike_median_sizer1.Add(wx.StaticText(self,-1,'Median Filter Kernel Size (odd integer)  '),0,wx.ALIGN_LEFT)
         self.despike_median_sizer1.Add(self.despike_kernel_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
 
         self.despike_median_sizer2 = wx.BoxSizer(wx.VERTICAL)
-        self.despike_threshold_ctrl = wx.SpinCtrl(self,value='350',min=0,max=1000000)
+        self.despike_threshold_ctrl = wx.SpinCtrl(self,value='1000',min=0,max=1000000)
         self.despike_median_sizer2.Add(wx.StaticText(self,-1,'Spike Threshold (%)  '),0,wx.ALIGN_LEFT)
         self.despike_median_sizer2.Add(self.despike_threshold_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
         
         self.despike_median_sizer3 = wx.BoxSizer(wx.VERTICAL)
-        self.despike_repeat_ctrl = wx.SpinCtrl(self,value='12',min=0,max=1000000)
+        self.despike_repeat_ctrl = wx.SpinCtrl(self,value='1',min=0,max=1000000)
         self.despike_median_sizer3.Add(wx.StaticText(self,-1,'# of passes'),0,wx.ALIGN_LEFT)
         self.despike_median_sizer3.Add(self.despike_repeat_ctrl,1,wx.EXPAND | wx.ALIGN_LEFT)
         
