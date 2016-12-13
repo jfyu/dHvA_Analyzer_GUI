@@ -80,7 +80,10 @@ class plotWindow(wx.Window):
         #print len(self.rawPlot.lines)
         
         #calculate the combined signal
-        self.CombinedY = self.InY*np.sin(self.phase*np.pi/180)+self.OutY*np.cos(self.phase*np.pi/180)
+        if self.inYState == True:
+            self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)-self.OutY*np.sin(self.phase*np.pi/180)
+        if self.outYState == True:
+            self.CombinedY = self.InY*np.sin(self.phase*np.pi/180)+self.OutY*np.cos(self.phase*np.pi/180)
         #print str(self.CombinedY[-1]-self.InY[-1])
         self.rawPlot.plot(self.x,self.InY,linewidth=2,color='blue')
         self.rawPlot.plot(self.x,self.OutY,linewidth=2,color='red')
@@ -96,9 +99,9 @@ class plotWindow(wx.Window):
 
         #sort the signals
         self.sortedX,self.sortedSignal = dHvA_Util.sort_array(self.x,self.CombinedY)
-        # if self.inYState == True:
-            # self.sortedX, self.sortedSignal = dHvA_Util.sort_array(self.x, self.InY)
-        # if self.outYState == True:
+        # if self.inystate == true:
+            # self.sortedx, self.sortedsignal = dhva_util.sort_array(self.x, self.iny)
+        # if self.outystate == true:
             # self.sortedX,self.sortedSignal = dHvA_Util.sort_array(self.x,self.OutY)
 
         if self.polyOn:
