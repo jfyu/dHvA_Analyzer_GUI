@@ -29,12 +29,7 @@ Once a data file is chosen, the X, in-phase Y and out-phase Y drop-down menus wi
 In its current state, this software supports max X to be 17.9. The values can be easily changed in the file dHvAFrame.py. 
 
 ###Choosing Phase
-The phase between the in-phase and out-phase Y, as acquired by the lock-in, is not immediately clear from the setup. This is because the low temperature transformers would introduce a phase shift between the two signals. In general, the optimal phase is found when the FFT signal has maximum amplitude. The combined signal is given as:
-\begin{equation}
-    Y = Y_{\mathrm{in}}\sin\theta+Y_{\mathrm{out}}\cos\theta
-    \label{eq:relative_phase}
-\end{equation}
-where $\theta$ is the phase angle. The optimal phase can be found automatically. 
+The phase between the in-phase and out-phase Y, as acquired by the lock-in, is not immediately clear from the setup. This is because the low temperature transformers would introduce a phase shift between the two signals. In general, the optimal phase is found when the FFT signal has maximum amplitude. One can choose whether to use the in-phase (resistive) data or the out of phase (capacitive) data. The optimal phase can be found automatically. 
 
 ###Polynomial Background Removal
 Next, the user can choose the highest order polynomial background to remove from the raw data. The user can also choose not to remove any background by unchecking the check box. The background is found by fitting a polynomial function of the chosen order to the raw data and then subtracted from it. 
