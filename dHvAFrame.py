@@ -315,6 +315,11 @@ class dHvAFrame(wx.Frame):
 
     def OnOpen(self,e):
      #""" Open a file"""
+        comboBox_choice = []
+        if self.Data_comboBox[0].GetValue()!="":
+            for i in range(0,3):
+                comboBox_choice.append(self.Data_comboBox[i].GetValue())
+
         dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.nc", wx.OPEN)
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
@@ -329,13 +334,21 @@ class dHvAFrame(wx.Frame):
                 self.Data_comboBox[i].Clear()
                 for ii in range(len(self.varnames)):
                     self.Data_comboBox[i].Append(self.varnames[ii])
+            #reset the previous choices
+            if len(comboBox_choice)>0:
+                for i in range(len(comboBox_choice)):
+                    self.Data_comboBox[i].SetValue(comboBox_choice[i])
+                self.setXdata(self)
+                self.setInYdata(self)
+                self.setOutYdata(self)
+ 
         dlg.Destroy()
         self.fileNameCtrl.SetValue(self.filename)
-        if self.Data_comboBox[0].GetValue() != "":
-            #In case you want combo box to stay the same while selecting a different file
-            self.setXdata(self)
-            self.setInYdata(self)
-            self.setOutYdata(self)
+        # if self.Data_comboBox[0].GetValue() != "":
+            # #In case you want combo box to stay the same while selecting a different file
+            # self.setXdata(self)
+            # self.setInYdata(self)
+            # self.setOutYdata(self)
     #def OnSave(self,e):
     #    pass
 
@@ -347,14 +360,17 @@ class dHvAFrame(wx.Frame):
                 warningDlg3.ShowModal()
                 warningDlg3.Destroy()
         else:
-            progressDlg = wx.ProgressDialog("Auto Phase Progress","Auto Phase Engaged, Working...",maximum = 175,parent = self,style = 0 | wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME |wx.PD_AUTO_HIDE )
+            progressDlg = wx.ProgressDialog("Auto Phase Progress","Auto Phase Engaged, Working...",maximum = 175,parent = self,style = 0 | wx.PD_APP_MODAL | wx.PD_ELAPSED_TIME | wx.PD_REMAINING_TIME |wx.PD_AUTO_HIDE |wx.PD_CAN_ABORT)
             max_signal = []
+            keepgoing = True
             for i in range(0,len(self.FFTPanel.Freq_List)):
                 max_signal.append(0)
             for phase_tmp in np.arange(0,180,5):
                 wx.MilliSleep(250)
                 wx.Yield()
-                progressDlg.Update(phase_tmp)
+                (keepgoing,skip) = progressDlg.Update(phase_tmp)
+                if keepgoing != True:
+                    break
                 self.phase = phase_tmp
                 self.phase_Ctrl.SetValue(phase_tmp)
                 self.applyChanges(self)

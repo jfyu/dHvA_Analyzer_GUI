@@ -81,9 +81,9 @@ class plotWindow(wx.Window):
         
         #calculate the combined signal
         if self.inYState == True:
-            self.CombinedY = self.InY*np.cos(self.phase*np.pi/180)-self.OutY*np.sin(self.phase*np.pi/180)
+            self.CombinedY = self.InY*np.cos(self.phase*np.pi/180.0)-self.OutY*np.sin(self.phase*np.pi/180.0)
         if self.outYState == True:
-            self.CombinedY = self.InY*np.sin(self.phase*np.pi/180)+self.OutY*np.cos(self.phase*np.pi/180)
+            self.CombinedY = self.InY*np.sin(self.phase*np.pi/180.0)+self.OutY*np.cos(self.phase*np.pi/180.0)
         #print str(self.CombinedY[-1]-self.InY[-1])
         self.rawPlot.plot(self.x,self.InY,linewidth=2,color='blue')
         self.rawPlot.plot(self.x,self.OutY,linewidth=2,color='red')
