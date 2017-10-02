@@ -1,8 +1,8 @@
 # de Haas-van Alphen Data Analyzer 
 GUI front for analyzing de Haas van Alphen Quantum Oscillation Data 
 
-##Required Packages and Usage
-###Required Packages
+## Required Packages and Usage
+### Required Packages
 In addition to basic installation of Python, one would to install the following packages:
 
     wxPython
@@ -14,27 +14,27 @@ In addition to basic installation of Python, one would to install the following 
     scipy
 
 
-###Usage
+### Usage
 To use the software, simply run the main.py file in command-line. When finished with inputting all the control parameters, press the Apply button, and the changes will be applied to the plotting window and the FFT window. 
 
-##Main Panel
+## Main Panel
 The main panel consists of a plotting panel on the left and the control panel on the right. The plotting panel plots data after every step of the analysis.    
 
-###Open File
+### Open File
 To open the data file, click the open icon button next the data name field. Note that the File Name field is not editable. This function can also be accessed by using the drop-down menu FILE, on the menu panel. Note that this software supports netCDF files only. 
 
-###Choosing Data and Range of Interest (ROI)
+### Choosing Data and Range of Interest (ROI)
 Once a data file is chosen, the X, in-phase Y and out-phase Y drop-down menus will be populated with the data fields encoded in the netCDF file. Since this software analyzes dHvA data, X is generally the applied field B and the two Ys would be the complex signal acquired by the lock-in.
 
 In its current state, this software supports max X to be 17.9. The values can be easily changed in the file dHvAFrame.py. 
 
-###Choosing Phase
+### Choosing Phase
 The phase between the in-phase and out-phase Y, as acquired by the lock-in, is not immediately clear from the setup. This is because the low temperature transformers would introduce a phase shift between the two signals. In general, the optimal phase is found when the FFT signal has maximum amplitude. One can choose whether to use the in-phase (resistive) data or the out of phase (capacitive) data. The optimal phase can be found automatically. 
 
-###Polynomial Background Removal
+### Polynomial Background Removal
 Next, the user can choose the highest order polynomial background to remove from the raw data. The user can also choose not to remove any background by unchecking the check box. The background is found by fitting a polynomial function of the chosen order to the raw data and then subtracted from it. 
 
-###Spike Removal
+### Spike Removal
 Sometimes the raw data will have sharp spikes, either from instrumentation noise or people walking by the dilution fridge while the data is being measured. The problem with these spikes is that once Fourier transformed, they increase the noise floor and thus may smear out dHvA peaks with small amplitudes. To an extent the windowing and smoothing (discussed in the next section) can help alleviate this problem, but not all spikes are removed that way.
 
 The problem of a spike removal algorithm is that it must also not remove high frequency dHvA. The current version of this software supports a median filter algorithm. I must emphasize here that this method is not particularly bulletproof -- it is liable to remove spikes at the expense of reducing oscillation amplitudes. Therefore I have set the default option in the control panel to not perform spike removal. The user is encouraged to experiment with the different inputs to find the optimal combination of parameters
@@ -43,7 +43,7 @@ for their own data. It should also be warned here that as the spike removal algo
 The algorithm itself is extremely simple: we move along the x-axis, taking a window with the size of the specified kernel (odd integer only, a warning will be shown if the integer entered is even, and the program will revert back to the closest odd integer. This is a specification from the Numpy package); we then calculate the median in that window, and compare each point in that window to the median. If the proportion of the data value to the median is more than the spike
 threshold as specified by the user, then we replace that data with the median value of the window. The user can also specify the number of passes for this procedure. The plot window has a separate figure which plots the data before and after de-spiking. This gives a visual guide to the user for tweaking the input parameters. 
 
-###Smoothing and Windowing
+### Smoothing and Windowing
 In FFT algorithms, a major assumption is that the signal has exactly integer number of cycles inside the time interval. But this is clearly not always the case. When FFT is performed on Signals with non-integral number of cycles, spectral leakage occurs. Spectral leakage refers to the distortion of the Fourier transformed signal such that a signal from a given frequency is spread out to adjacent frequencies: i.e. satellite peaks surrounding a central
 peak. These satellite peaks can be mistaken as dHvA frequencies.
 
@@ -59,7 +59,7 @@ With the default option of Hamming, which should be sufficient for most signals.
 
 The smoothing function is based on the SignalSmooth code of the SciPy.org's cookbook. This function is usually not used.
 
-##FFT Panel
+## FFT Panel
 This panel features a plot window where the FFT of the processed signal is plotted, once all the analysis is applied (i.e. the Apply button is pressed on the main panel). The default matplotlib toolbar is available at the bottom. In addition to the toolbar's zoom in functionality, on the top right corner of the control panel the user can adjust the x and y axis limits manually.
 
 The FFT panel cannot be closed. If closed, upon pressing Apply button on the Main Panel, it will appear again. This is helpful to users who tends to close windows instead of minimizing them. 
