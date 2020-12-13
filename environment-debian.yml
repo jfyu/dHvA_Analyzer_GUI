@@ -72,5 +72,4 @@ dependencies:
     - pytz==2020.4
     - scipy==1.2.3
     - subprocess32==3.5.4
-prefix: /home/jfyu/miniconda3/envs/dHvA
 
