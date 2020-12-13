@@ -1,21 +1,27 @@
 # de Haas-van Alphen Data Analyzer 
 GUI front for analyzing de Haas van Alphen Quantum Oscillation Data 
 
-## Required Packages and Usage
-### Required Packages
-In addition to basic installation of Python, one would to install the following packages:
+## Installation
+Currently, this package is only supported for `python 2.7`. As `python 2.7` is no longer officially supported starting January 2020, it is highly recommended that you save the python environment locally, as packages may no longer be available in `pip` or `anaconda` channels in the future. 
 
-    wxPython
-    os
-    csv
-    netCDF
-    numpy
-    matplotlib
-    scipy
+A `requirements.txt` is provided in the event that the user wants to use `pip` to install all the relevant packages, but it is recommended to use [anaconda](https://docs.conda.io/projects/conda/en/latest/index.html) to create an environment. 
 
+To use `anaconda`, clone this repo in your local environment. For debian systems, run the following command
+```python
+conda env create -f environment-debian.yml
+```
+For any other system run the following command
+```python
+conda env create -f environment.yml
+```
 
 ### Usage
-To use the software, simply run the main.py file in command-line. When finished with inputting all the control parameters, press the Apply button, and the changes will be applied to the plotting window and the FFT window. 
+To use the software, run the following commands from the root directory
+```bash
+conda activate dHvA (or any other name you named your environment)
+python main.py
+```
+When finished with inputting all the control parameters, press the Apply button, and the changes will be applied to the plotting window and the FFT window. 
 
 ## Main Panel
 The main panel consists of a plotting panel on the left and the control panel on the right. The plotting panel plots data after every step of the analysis.    

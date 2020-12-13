@@ -31,7 +31,6 @@ class dHvAFrame(wx.Frame):
         #same initialization as wx.Frame
         wx.Frame.__init__(self,*args,**kwargs)
 
-   
         #setting up the menu
         filemenu=wx.Menu()
         menuOpen = filemenu.Append(wx.ID_OPEN,"OPEN","Open a data file")
@@ -320,7 +319,7 @@ class dHvAFrame(wx.Frame):
             for i in range(0,3):
                 comboBox_choice.append(self.Data_comboBox[i].GetValue())
 
-        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.nc", wx.OPEN)
+        dlg = wx.FileDialog(self, "Choose a file", self.dirname, "", "*.nc",  style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST)
         if dlg.ShowModal() == wx.ID_OK:
             self.filename = dlg.GetFilename()
             self.dirname = dlg.GetDirectory()
